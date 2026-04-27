@@ -10,7 +10,7 @@ separate evidence lines:
 2. Quantify openly available spatial/source tables from HRA003627 and HRA008846
    instead of only citing the papers narratively.
 
-All outputs keep analysis and QC role IDs distinct. The analyses are
+All outputs keep analysis and quality-check batch IDs distinct. The analyses are
 association and source-table validation artifacts; they are not causal proof.
 """
 
@@ -54,11 +54,24 @@ DELIVERABLE_ROOT = OUT_ROOT / "deliverables"
 CACHE_ROOT = DATA_ROOT / "ensembl_sequence_cache"
 
 RUN_DATE = datetime.now(UTC).date().isoformat()
-ANALYSIS_ROLE_ID = "independent_spatial_analysis_001"
-QC_ROLE_ID = "independent_spatial_qc_001"
+ANALYSIS_BATCH_ID = "independent_spatial_analysis_001"
+QUALITY_CHECK_ID = "independent_spatial_quality_check_001"
 
 ENSEMBL_REST = "https://rest.ensembl.org"
 HTTP_CLIENT_ID = "escc-spatial-validation/0.2"
+
+
+def show_help_if_requested() -> None:
+    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+        print((__doc__ or "").strip())
+        print(
+            "\nUsage:\n"
+            "  python scripts/run_independent_patient_and_spatial_quant.py\n\n"
+            "Run from the repository root after installing requirements. Outputs are written "
+            "under spatial_escc_workflow/results, reports, reviews and deliverables relative "
+            "to the repository."
+        )
+        raise SystemExit(0)
 
 GSE53625_MATRIX_URL = (
     "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE53nnn/GSE53625/matrix/"
@@ -396,8 +409,8 @@ def build_target_sequence_index(probe_lengths: set[int]) -> tuple[dict[tuple[int
                 "n_transcripts_queried": bundle.get("n_transcripts_queried", 0),
                 "n_sequences_indexed": bundle.get("n_sequences", 0),
                 "total_bases_indexed": bundle.get("total_bases_indexed", 0),
-                "analysis_role_id": ANALYSIS_ROLE_ID,
-                "qc_role_id": QC_ROLE_ID,
+                "analysis_batch_id": ANALYSIS_BATCH_ID,
+                "quality_check_id": QUALITY_CHECK_ID,
             }
         )
         for seq_item in bundle.get("sequences", []):
@@ -452,8 +465,8 @@ def map_features_to_axis_genes(features: list[dict[str, Any]]) -> tuple[list[dic
                     "accepted_gene": matched[0] if len(matched) == 1 else "",
                     "match_type": match_type,
                     "specificity_scope": "unambiguous_within_axis_target_ensembl_sequences",
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     return mapped_rows, bundle_rows
@@ -576,8 +589,8 @@ def survival_rows_for_gse53625(
                 "event_rate_ratio_approx_ci_high": ci_high,
                 "validation_status": status,
                 "qc_note": "Median cutpoint is fixed within tumor cohort; rate ratio is an event-rate approximation, not a Cox model. Survival support requires logrank p<0.05.",
-                "analysis_role_id": ANALYSIS_ROLE_ID,
-                "qc_role_id": QC_ROLE_ID,
+                "analysis_batch_id": ANALYSIS_BATCH_ID,
+                "quality_check_id": QUALITY_CHECK_ID,
             }
         )
     return rows
@@ -633,8 +646,8 @@ def tumor_normal_rows_for_gse53625(
                 "two_sided_sign_test_p": p_value,
                 "validation_status": status,
                 "qc_note": "Paired sign test uses tumor-normal pairs after target-sequence probe rescue.",
-                "analysis_role_id": ANALYSIS_ROLE_ID,
-                "qc_role_id": QC_ROLE_ID,
+                "analysis_batch_id": ANALYSIS_BATCH_ID,
+                "quality_check_id": QUALITY_CHECK_ID,
             }
         )
     return rows
@@ -674,8 +687,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
                     "exact_probe_count": sum(1 for row in probe_rows if row.get("match_type") == "exact"),
                     "one_mismatch_probe_count": sum(1 for row in probe_rows if row.get("match_type") == "one_mismatch"),
                     "mapped_in_expression_matrix": "yes" if gene in expr else "no",
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     survival_rows = survival_rows_for_gse53625(samples, metadata, expr)
@@ -694,8 +707,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "accepted_gene",
             "match_type",
             "specificity_scope",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -711,8 +724,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "n_transcripts_queried",
             "n_sequences_indexed",
             "total_bases_indexed",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -726,8 +739,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "exact_probe_count",
             "one_mismatch_probe_count",
             "mapped_in_expression_matrix",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -754,8 +767,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "event_rate_ratio_approx_ci_high",
             "validation_status",
             "qc_note",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -777,8 +790,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "two_sided_sign_test_p",
             "validation_status",
             "qc_note",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     survival_passed_axes = [
@@ -855,8 +868,8 @@ def hra003627_quantification() -> tuple[list[dict[str, Any]], dict[str, Any]]:
                     "spearman_stage_n": n_trend,
                     "escc_vs_normal_mann_whitney_p": p_cancer,
                     "interpretation": "source-table ROI-level progression quantification; not direct CAF-JAG1-NOTCH1 ligand-receptor evidence",
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     write_tsv(
@@ -877,8 +890,8 @@ def hra003627_quantification() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "spearman_stage_n",
             "escc_vs_normal_mann_whitney_p",
             "interpretation",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     return rows, {"status": "completed", "n_rows": len(rows), "n_roi": int(df.shape[0])}
@@ -937,8 +950,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                             "significance_status": significance_status(pvalue, fdr),
                             "axis_membership": axis_membership(gene),
                             "interpretation": "published source-table perturbation row for axis-relevant gene",
-                            "analysis_role_id": ANALYSIS_ROLE_ID,
-                            "qc_role_id": QC_ROLE_ID,
+                            "analysis_batch_id": ANALYSIS_BATCH_ID,
+                            "quality_check_id": QUALITY_CHECK_ID,
                         }
                     )
             elif "expression patterns" in sheet:
@@ -964,8 +977,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                             "significance_status": significance_status(pvalue_f, fdr_f),
                             "axis_membership": axis_membership(gene),
                             "interpretation": "published source-table DEG hit for axis-relevant gene",
-                            "analysis_role_id": ANALYSIS_ROLE_ID,
-                            "qc_role_id": QC_ROLE_ID,
+                            "analysis_batch_id": ANALYSIS_BATCH_ID,
+                            "quality_check_id": QUALITY_CHECK_ID,
                         }
                     )
             else:
@@ -988,8 +1001,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                         "significance_status": significance_status(pvalue, fdr),
                         "axis_membership": axis_membership(gene),
                         "interpretation": "published source-table DEG hit for axis-relevant gene",
-                        "analysis_role_id": ANALYSIS_ROLE_ID,
-                        "qc_role_id": QC_ROLE_ID,
+                        "analysis_batch_id": ANALYSIS_BATCH_ID,
+                        "quality_check_id": QUALITY_CHECK_ID,
                     }
                 )
     write_tsv(
@@ -1009,8 +1022,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
             "significance_status",
             "axis_membership",
             "interpretation",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     return rows
@@ -1068,8 +1081,8 @@ def hra008846_cell_abundance(table_path: Path) -> list[dict[str, Any]]:
                         "spearman_stage_p_approx": p_value,
                         "spearman_stage_n": n_trend,
                         "relevance": relevance,
-                        "analysis_role_id": ANALYSIS_ROLE_ID,
-                        "qc_role_id": QC_ROLE_ID,
+                        "analysis_batch_id": ANALYSIS_BATCH_ID,
+                        "quality_check_id": QUALITY_CHECK_ID,
                     }
                 )
     write_tsv(
@@ -1089,8 +1102,8 @@ def hra008846_cell_abundance(table_path: Path) -> list[dict[str, Any]]:
             "spearman_stage_p_approx",
             "spearman_stage_n",
             "relevance",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     return rows
@@ -1131,8 +1144,8 @@ def hra008846_ligand_receptor(table_path: Path) -> list[dict[str, Any]]:
                 "axis_hit_genes": hit_genes,
                 "axis_membership": sorted({axis for gene in hit_genes for axis in axis_membership(gene)}),
                 "direct_jag1_notch1_flag": "yes" if direct_jag_notch else "no",
-                "analysis_role_id": ANALYSIS_ROLE_ID,
-                "qc_role_id": QC_ROLE_ID,
+                "analysis_batch_id": ANALYSIS_BATCH_ID,
+                "quality_check_id": QUALITY_CHECK_ID,
             }
         )
     write_tsv(
@@ -1154,8 +1167,8 @@ def hra008846_ligand_receptor(table_path: Path) -> list[dict[str, Any]]:
             "axis_hit_genes",
             "axis_membership",
             "direct_jag1_notch1_flag",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     return rows
@@ -1221,17 +1234,17 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "stage": "independent_patient_validation",
             "check": "independent_qc_roles",
-            "status": "pass" if ANALYSIS_ROLE_ID != QC_ROLE_ID else "reject",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
-            "qc_comment": "Analysis and QC role IDs are distinct.",
+            "status": "pass" if ANALYSIS_BATCH_ID != QUALITY_CHECK_ID else "reject",
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
+            "qc_comment": "Analysis and quality-check batch IDs are distinct.",
         },
         {
             "stage": "independent_patient_validation",
             "check": "gse53625_probe_sequence_rescue",
             "status": probe_status,
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
             "qc_comment": (
                 f"Accepted probes={patient.get('n_accepted_probe_rows', 0)}; "
                 f"mapped genes={','.join(patient.get('mapped_genes', [])) or 'none'}. "
@@ -1242,8 +1255,8 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "stage": "independent_patient_validation",
             "check": "gse53625_survival_and_paired_tests",
             "status": patient_test_status,
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
             "qc_comment": (
                 "Paired tumor-normal validation passes where sign-test support is present; "
                 "survival/prognostic validation is not supported unless logrank p<0.05."
@@ -1253,16 +1266,16 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "stage": "spatial_source_table_quantification",
             "check": "hra003627_roi_source_table",
             "status": "pass_with_limits" if spatial.get("hra003627", {}).get("status") == "completed" else "reject",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
             "qc_comment": "Quantifies ROI-level D&K/progression signatures; does not directly test CAF-Epi/JAG1-NOTCH1.",
         },
         {
             "stage": "spatial_source_table_quantification",
             "check": "hra008846_deg_cell_lr_tables",
             "status": spatial_status,
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
             "qc_comment": (
                 f"axis source-table rows={len(spatial.get('hra008846_deg_rows', []))}; "
                 f"significant or p-only rows={spatial.get('n_significant_or_p_only_deg_rows', 0)}; "
@@ -1274,10 +1287,10 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
         },
         {
             "stage": "interpretation_status",
-            "check": "claim_strength_after_two_lines",
+            "check": "evidence_strength_after_sensitivity",
             "status": "limited_support" if spatial_status.startswith("pass") else "not_supported",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
             "qc_comment": (
                 "Use these results for association/source-table reproducibility only. "
                 "Do not claim independent survival validation or direct CAF-Epi JAG1-NOTCH1 LR evidence."
@@ -1287,7 +1300,7 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
     write_tsv(
         REVIEW_ROOT / "independent_patient_and_spatial_quant_review.tsv",
         rows,
-        ["stage", "check", "status", "analysis_role_id", "qc_role_id", "qc_comment"],
+        ["stage", "check", "status", "analysis_batch_id", "quality_check_id", "qc_comment"],
     )
     return rows
 
@@ -1328,12 +1341,12 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
         "# Independent Patient And Spatial Source-Table Quantification",
         "",
         f"Run date: {RUN_DATE}",
-        f"Analysis role: `{ANALYSIS_ROLE_ID}`",
-        f"QC role: `{QC_ROLE_ID}`",
+        f"Analysis batch: `{ANALYSIS_BATCH_ID}`",
+        f"Quality check: `{QUALITY_CHECK_ID}`",
         "",
         "## Bottom line",
         "",
-        f"- GSE53625 independent patient gate: `{patient.get('status', 'failed')}`.",
+        f"- GSE53625 independent patient status: `{patient.get('status', 'failed')}`.",
         f"- GSE53625 accepted probe rows: {patient.get('n_accepted_probe_rows', 0)}; mapped genes: {', '.join(patient.get('mapped_genes', [])) or 'none'}.",
         f"- Spatial source-table status: `{spatial.get('status', 'failed')}`.",
         f"- HRA008846 direct JAG1-NOTCH1 ligand-receptor rows: {spatial.get('n_direct_jag1_notch1_lr_hits', 0)}.",
@@ -1440,8 +1453,8 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
 def write_summary(summary: dict[str, Any]) -> None:
     compact = {
         "run_date": RUN_DATE,
-        "analysis_role_id": ANALYSIS_ROLE_ID,
-        "qc_role_id": QC_ROLE_ID,
+        "analysis_batch_id": ANALYSIS_BATCH_ID,
+        "quality_check_id": QUALITY_CHECK_ID,
         "gse53625": {
             key: value
             for key, value in summary["gse53625"].items()
@@ -1480,8 +1493,8 @@ def write_addendum(summary: dict[str, Any]) -> None:
         "",
         "## Result",
         "",
-        f"- Independent patient validation gate: `{patient.get('status', 'failed')}`.",
-        f"- Spatial/source-table quantification gate: `{spatial.get('status', 'failed')}`.",
+        f"- Independent patient validation status: `{patient.get('status', 'failed')}`.",
+        f"- Spatial/source-table quantification status: `{spatial.get('status', 'failed')}`.",
         "",
         "## Manuscript use",
         "",
@@ -1552,4 +1565,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    show_help_if_requested()
     main()

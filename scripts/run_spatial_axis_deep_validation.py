@@ -6,9 +6,9 @@ This script extends the spatial signature screen with:
 - TCGA ESCC immune and pathway association checks.
 - Independent GEO bulk validation in GSE47404.
 - GSE53625 mapping audit.
-- GDSC2 ESCA drug-response evidence for axis-relevant target classes.
+- GDSC2 ESCA target-class context for axis-relevant genes.
 
-All outputs are evidence artifacts with separate analysis/QC role IDs. The
+All outputs are evidence artifacts with separate analysis and quality-check batch IDs. The
 results are association evidence, not mechanistic proof.
 """
 
@@ -44,9 +44,21 @@ TABLE_ROOT = OUT_ROOT / "results" / "tables"
 REPORT_ROOT = OUT_ROOT / "reports"
 REVIEW_ROOT = OUT_ROOT / "reviews"
 
-ANALYSIS_ROLE_ID = "spatial_axis_analysis_001"
-QC_ROLE_ID = "spatial_axis_qc_001"
+ANALYSIS_BATCH_ID = "spatial_axis_analysis_001"
+QUALITY_CHECK_ID = "spatial_axis_quality_check_001"
 RUN_DATE = datetime.now(UTC).date().isoformat()
+
+
+def show_help_if_requested() -> None:
+    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+        print((__doc__ or "").strip())
+        print(
+            "\nUsage:\n"
+            "  python scripts/run_spatial_axis_deep_validation.py\n\n"
+            "Run from the repository root. Outputs are written under "
+            "spatial_escc_workflow/results, reports and reviews relative to the repository."
+        )
+        raise SystemExit(0)
 
 
 AXES = {
@@ -388,8 +400,8 @@ def association_rows(
                     "panel_mean_axis_low": mean(low_scores),
                     "panel_high_minus_low": mean(high_scores) - mean(low_scores),
                     "mann_whitney_p": p_mw,
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     fdr_s = bh_fdr([float(row["spearman_p_approx"]) for row in rows])
@@ -562,8 +574,8 @@ def gse47404_clinical_rows(samples: list[str], metadata: dict[str, dict[str, str
                     "mean_axis_high_group": mean(high_scores),
                     "high_minus_low": mean(high_scores) - mean(low_scores),
                     "mann_whitney_p": mann_whitney_p(low_scores, high_scores),
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     fdr = bh_fdr([float(row["mann_whitney_p"]) for row in rows])
@@ -609,8 +621,8 @@ def run_gse47404() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dic
             "gene_symbol": gene,
             "probe_count": probe_counts.get(gene, 0),
             "used_in_axis_or_panel": "yes",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         }
         for gene in sorted(relevant_genes)
     ]
@@ -678,8 +690,8 @@ def run_gse53625_audit() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "direct_axis_gene_symbol_hits_in_raw_annotation": direct_hits,
             "validation_status": "blocked_no_reliable_feature_to_gene_symbol_map",
             "qc_note": "GPL18109 matrix uses Agilent feature numbers. GPL18109 has no gene symbol column; first RAW member uses internal probe/gene names and yielded zero direct axis gene-symbol hits.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         }
     )
     return rows, {"dataset": "GSE53625", "status": rows[0]["validation_status"], "n_samples": sample_count}
@@ -741,8 +753,8 @@ def run_gdsc() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[st
                     "min_z_score": float(item["min_z_score"]),
                     "max_z_score": float(item["max_z_score"]),
                     "interpretation_limit": "GDSC2 ESCA cell-line drug response only; not correlated with axis expression in this artifact.",
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
         axis_text = sub[["DRUG_NAME", "PUTATIVE_TARGET", "PATHWAY_NAME"]].fillna("").astype(str).agg(" ".join, axis=1)
@@ -758,8 +770,8 @@ def run_gdsc() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[st
                     "axis_class_drug_rows": len(sub),
                     "axis_class_drug_count": int(sub["DRUG_NAME"].nunique()),
                     "coverage_note": "exact target match" if int(exact.sum()) else "covered only by broader pathway class or not covered",
-                    "analysis_role_id": ANALYSIS_ROLE_ID,
-                    "qc_role_id": QC_ROLE_ID,
+                    "analysis_batch_id": ANALYSIS_BATCH_ID,
+                    "quality_check_id": QUALITY_CHECK_ID,
                 }
             )
     return rows, coverage, manifest, {
@@ -787,8 +799,8 @@ def write_report(summary: dict[str, Any]) -> None:
         "# Deep Axis Validation Report",
         "",
         f"Run date: {RUN_DATE}",
-        f"Analysis role: `{ANALYSIS_ROLE_ID}`",
-        f"QC role: `{QC_ROLE_ID}`",
+        f"Analysis batch: `{ANALYSIS_BATCH_ID}`",
+        f"Quality check: `{QUALITY_CHECK_ID}`",
         "",
         "## Scope",
         "",
@@ -840,9 +852,9 @@ def write_report(summary: dict[str, Any]) -> None:
                 fdr=stringify(row["mann_whitney_fdr"]),
             )
         )
-    lines.extend(["", "## Drug sensitivity evidence", ""])
+    lines.extend(["", "## Supplementary target-class context", ""])
     lines.append(
-        "- GDSC2 ESCA cell-line evidence was summarized for axis-relevant drug target classes. This is drug-response evidence, not an axis-expression sensitivity model."
+        "- GDSC2 ESCA cell-line data were summarized only as target-class context for axis-relevant genes. These summaries are not an axis-expression sensitivity model."
     )
     for row in sorted(drug_rows, key=lambda r: float(r["median_z_score"]))[:10]:
         lines.append(
@@ -875,58 +887,58 @@ def write_report(summary: dict[str, Any]) -> None:
 def write_reviews(summary: dict[str, Any]) -> str:
     review_rows = [
         {
-            "stage": "role_separation",
+            "stage": "quality_check_structure",
             "check": "independent_qc_roles",
-            "status": "pass" if ANALYSIS_ROLE_ID != QC_ROLE_ID else "reject",
-            "qc_comment": "Analysis and QC role IDs are distinct.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "status": "pass" if ANALYSIS_BATCH_ID != QUALITY_CHECK_ID else "reject",
+            "qc_comment": "Analysis and quality-check batch IDs are distinct.",
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
         {
             "stage": "tcga_immune_pathway",
             "check": "tcga_escc_bulk_associations",
             "status": "pass_with_limits",
             "qc_comment": "Association analyses completed in TCGA ESCC; Spearman p-values are approximate and BH-adjusted.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
         {
             "stage": "geo_independent_bulk",
             "check": "gse47404_gene_mapping",
             "status": "pass_with_limits" if summary["gse47404_meta"].get("status") == "completed" else "reject",
             "qc_comment": "GSE47404 is tumor-only and lacks survival in matrix metadata; usable for expression correlations and pathology association.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
         {
             "stage": "geo_independent_bulk",
             "check": "gse53625_mapping",
             "status": "reject",
             "qc_comment": "GSE53625 has useful clinical metadata but public matrix cannot be reliably mapped to gene symbols from GPL18109/first RAW member.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
         {
             "stage": "drug_sensitivity",
             "check": "gdsc2_esca_drug_response",
             "status": "pass_with_limits" if summary["gdsc_meta"].get("status") == "completed" else "reject",
             "qc_comment": "GDSC2 ESCA drug response is summarized by drug target class; no cell-line expression join was performed.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
         {
             "stage": "statistics",
             "check": "claims_and_multiplicity",
             "status": "pass_with_limits",
             "qc_comment": "Use association/prediction wording only. Do not claim causality, TLS formation, CAF-Epi signaling, or drug sensitivity mechanisms without experimental validation.",
-            "analysis_role_id": ANALYSIS_ROLE_ID,
-            "qc_role_id": QC_ROLE_ID,
+            "analysis_batch_id": ANALYSIS_BATCH_ID,
+            "quality_check_id": QUALITY_CHECK_ID,
         },
     ]
     write_tsv(
         REVIEW_ROOT / "deep_axis_validation_review.tsv",
         review_rows,
-        ["stage", "check", "status", "qc_comment", "analysis_role_id", "qc_role_id"],
+        ["stage", "check", "status", "qc_comment", "analysis_batch_id", "quality_check_id"],
     )
     return "pass_with_limits"
 
@@ -961,8 +973,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -991,8 +1003,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
 
@@ -1023,8 +1035,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -1046,14 +1058,14 @@ def main() -> None:
             "high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
         TABLE_ROOT / "deep_axis_geo_gse47404_gene_coverage.tsv",
         gse47404_meta.get("coverage_rows", []),
-        ["dataset", "gene_symbol", "probe_count", "used_in_axis_or_panel", "analysis_role_id", "qc_role_id"],
+        ["dataset", "gene_symbol", "probe_count", "used_in_axis_or_panel", "analysis_batch_id", "quality_check_id"],
     )
     write_tsv(
         TABLE_ROOT / "deep_axis_geo_download_manifest.tsv",
@@ -1075,8 +1087,8 @@ def main() -> None:
             "direct_axis_gene_symbol_hits_in_raw_annotation",
             "validation_status",
             "qc_note",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
 
@@ -1097,8 +1109,8 @@ def main() -> None:
             "min_z_score",
             "max_z_score",
             "interpretation_limit",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -1111,8 +1123,8 @@ def main() -> None:
             "axis_class_drug_rows",
             "axis_class_drug_count",
             "coverage_note",
-            "analysis_role_id",
-            "qc_role_id",
+            "analysis_batch_id",
+            "quality_check_id",
         ],
     )
     write_tsv(
@@ -1125,9 +1137,9 @@ def main() -> None:
         "status": "completed",
         "verdict": "pass_with_limits",
         "run_date": RUN_DATE,
-        "analysis_role_id": ANALYSIS_ROLE_ID,
-        "qc_role_id": QC_ROLE_ID,
-        "role_separation_ok": ANALYSIS_ROLE_ID != QC_ROLE_ID,
+        "analysis_batch_id": ANALYSIS_BATCH_ID,
+        "quality_check_id": QUALITY_CHECK_ID,
+        "independent_quality_check_recorded": ANALYSIS_BATCH_ID != QUALITY_CHECK_ID,
         "tcga_meta": tcga_meta,
         "gse47404_meta": gse47404_meta,
         "gse53625_meta": gse53625_meta,
@@ -1164,4 +1176,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    show_help_if_requested()
     main()

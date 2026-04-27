@@ -153,8 +153,8 @@
       "cancer_type",
       "isoform_specific",
       "is_escc",
-      "analysis_role_id",
-      "qc_role_id",
+      "analysis_batch_id",
+      "quality_check_id",
       "analysis_conclusion",
       "qc_conclusion",
       "verdict"
@@ -168,8 +168,8 @@
       "script_path",
       "parameters",
       "output_artifacts",
-      "analysis_role_id",
-      "qc_role_id",
+      "analysis_batch_id",
+      "quality_check_id",
       "review_status"
     ]
   },

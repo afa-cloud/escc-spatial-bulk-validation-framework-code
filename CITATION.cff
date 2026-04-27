@@ -9,9 +9,9 @@ authors:
     given-names: Yuqing
 repository-code: "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code"
 license: MIT
-version: "v1.0.3-submission-cleantext"
+version: "v1.0.4-submission-polished"
 date-released: "2026-04-28"
-doi: "10.5281/zenodo.19828738"
+doi: "10.5281/zenodo.19826728"
 keywords:
   - esophageal squamous cell carcinoma
   - spatial transcriptomics

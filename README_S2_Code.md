@@ -18,8 +18,8 @@ This archive contains the reproducible scripts and configuration files used for 
 
 All primary datasets are public: TCGA/GDC/UCSC Xena, GEO GSE47404, GEO GSE53625, HRA003627, HRA008846 and GDSC2. This code archive does not contain large source datasets.
 
-This archive intentionally excludes manuscript drafting, DOCX generation, cover-letter generation, and internal audit-rendering scripts.
+This archive contains analysis code and configuration files only. Administrative submission files and local quality-control utilities are not included.
 
 ## Archive
 
-The sanitized public code release is archived on Zenodo at https://doi.org/10.5281/zenodo.19826729.
+The clean-text public code release should be cited with its Zenodo DOI after the release is archived.

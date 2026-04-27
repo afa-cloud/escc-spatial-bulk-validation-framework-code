@@ -266,7 +266,7 @@ def ensure_dirs() -> None:
 
 
 def head_content_length(url: str) -> int:
-    req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "codex-escc-spatial/0.1"})
+    req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "escc-spatial-validation/0.1"})
     with urllib.request.urlopen(req, timeout=60) as response:
         return int(response.headers.get("Content-Length") or 0)
 
@@ -285,7 +285,7 @@ def range_download(url: str, path: Path, chunk_size: int = 2 * 1024 * 1024) -> d
     with path.open(mode) as handle:
         while not expected or current < expected:
             end = current + chunk_size - 1 if not expected else min(current + chunk_size - 1, expected - 1)
-            headers = {"Range": f"bytes={current}-{end}", "User-Agent": "codex-escc-spatial/0.1"}
+            headers = {"Range": f"bytes={current}-{end}", "User-Agent": "escc-spatial-validation/0.1"}
             last_error = ""
             for attempt in range(1, 5):
                 try:

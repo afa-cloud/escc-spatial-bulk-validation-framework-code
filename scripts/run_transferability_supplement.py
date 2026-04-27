@@ -547,7 +547,7 @@ def write_report(
             "",
             "As a supplementary transferability check, the same tiered framework was applied to two non-stromal ESCC phenotypes derived from published spatial source tables: differentiation/keratinization loss and cancerization/progression gain. HRA003627 source-table quantification showed the expected monotonic stage trends for both phenotypes. In public bulk resources, GSE47404 provided a tumor-only correlation layer, and the precomputed TCGA/GTEx signature artifacts provided tumor-normal and survival context from the earlier successful workflow run. These results support the portability of the framework to epithelial progression phenotypes while preserving the same claim boundaries used for the CAF/ECM demonstration.",
             "",
-            "## Review Gate",
+            "## Reproducibility Status",
             "",
             "- Executor and reviewer IDs are distinct.",
             "- Source-table rows are treated as published supplementary quantitative tables, not raw spatial matrices.",

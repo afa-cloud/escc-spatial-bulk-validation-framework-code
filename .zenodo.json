@@ -1,7 +1,7 @@
 {
   "title": "ESCC spatial-to-bulk validation framework",
   "upload_type": "software",
-  "description": "Sanitized analysis code and reproducibility materials for a public-data spatial-to-bulk validation framework in esophageal squamous cell carcinoma. The archive excludes manuscript drafting, DOCX generation, cover-letter generation, and internal audit-rendering scripts.",
+  "description": "Clean-text analysis code and reproducibility materials for a public-data spatial-to-bulk validation framework in esophageal squamous cell carcinoma. The archive contains public-data analysis scripts, configuration files, manifests and processed supporting tables.",
   "creators": [
     {
       "name": "Yang, Haoshui",
@@ -20,6 +20,6 @@
     "reproducibility",
     "source table"
   ],
-  "version": "v1.0.0-submission-sanitized",
+  "version": "v1.0.1-submission-cleantext",
   "access_right": "open"
 }

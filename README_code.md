@@ -1,6 +1,6 @@
 # Reproducibility Code
 
-These scripts reproduce the public-data analysis tables used by the manuscript. The public code package intentionally excludes manuscript drafting, DOCX generation, cover-letter generation, and internal audit-rendering scripts.
+These scripts reproduce the public-data analysis tables used by the manuscript. The public code package contains analysis code only; administrative submission files and local quality-control utilities are not included.
 
 - run_spatial_axis_deep_validation.py
 - run_independent_patient_and_spatial_quant.py

@@ -58,7 +58,7 @@ EXECUTOR_ID = "independent_spatial_executor_001"
 REVIEWER_ID = "independent_spatial_reviewer_001"
 
 ENSEMBL_REST = "https://rest.ensembl.org"
-USER_AGENT = "codex-escc-spatial-validation/0.2"
+USER_AGENT = "escc-spatial-validation/0.2"
 
 GSE53625_MATRIX_URL = (
     "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE53nnn/GSE53625/matrix/"
@@ -1273,9 +1273,9 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             ),
         },
         {
-            "stage": "manuscript_gate",
+            "stage": "interpretation_status",
             "check": "claim_strength_after_two_lines",
-            "status": "revise_before_submission" if spatial_status.startswith("pass") else "no_go",
+            "status": "limited_support" if spatial_status.startswith("pass") else "not_supported",
             "executor_agent_id": EXECUTOR_ID,
             "reviewer_agent_id": REVIEWER_ID,
             "reviewer_comment": (
@@ -1337,7 +1337,7 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
         f"- GSE53625 accepted probe rows: {patient.get('n_accepted_probe_rows', 0)}; mapped genes: {', '.join(patient.get('mapped_genes', [])) or 'none'}.",
         f"- Spatial source-table status: `{spatial.get('status', 'failed')}`.",
         f"- HRA008846 direct JAG1-NOTCH1 ligand-receptor rows: {spatial.get('n_direct_jag1_notch1_lr_hits', 0)}.",
-        "- Manuscript gate after subagent review: `revise_before_submission`; use as association/source-table evidence, not as independent survival or direct LR proof.",
+        "- Evidence interpretation status: `limited_support`; use as association/source-table evidence, not as independent survival or direct LR proof.",
         "",
         "## GSE53625 patient validation",
         "",
@@ -1418,7 +1418,7 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
             "- No direct JAG1-NOTCH1 ligand-receptor row was found in HRA008846 Table S6; the CAF axis is supported mainly by ST/CAF ECM DEG and broader Notch/pathway correlations."
             " The phrase JAG1-NOTCH1 should be treated as a hypothesis label unless an independent direct LR or perturbation source is added."
         )
-    report_lines.extend(["", "## Review gate", ""])
+    report_lines.extend(["", "## Reproducibility status", ""])
     for row in review_rows:
         report_lines.append(f"- {row['stage']} / {row['check']}: `{row['status']}` - {row['reviewer_comment']}")
     report_lines.extend(
@@ -1513,7 +1513,7 @@ def write_package() -> Path:
         TABLE_ROOT / "hra008846_cell_abundance_trends.tsv",
         TABLE_ROOT / "hra008846_ligand_receptor_axis_hits.tsv",
         TABLE_ROOT / "hra008846_download_manifest.tsv",
-        REVIEW_ROOT / "independent_patient_and_spatial_quant_subagent_audit.tsv",
+        REVIEW_ROOT / "independent_patient_and_spatial_quant_reproducibility_audit.tsv",
         ROOT / "scripts" / "run_independent_patient_and_spatial_quant.py",
     ]
     with zipfile.ZipFile(package_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:

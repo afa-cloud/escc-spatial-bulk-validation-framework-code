@@ -1,12 +1,7 @@
 {
   "build_time": "2026-04-28T00:00:00",
-  "purpose": "Sanitized supplementary code package for checked PLOS ONE submission with transferability supplement",
-  "exclusions": [
-    "manuscript drafting scripts",
-    "DOCX generation scripts",
-    "cover-letter generation scripts",
-    "internal audit-rendering scripts"
-  ],
+  "purpose": "Supplementary public-data analysis code package for PLOS ONE submission with transferability supplement",
+  "scope": "analysis code only; administrative submission files and local quality-control utilities are not included",
   "included_files": [
     "README_S2_Code.md",
     "README_code.md",
@@ -20,8 +15,8 @@
     "scripts/run_transferability_supplement.py"
   ],
   "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
-  "release_tag": "v1.0.0-submission-sanitized",
-  "release_commit": "70248bd9b3e82c150bdd261231cffb107f5a4124",
-  "zenodo_version_doi": "10.5281/zenodo.19826729",
-  "zenodo_concept_doi": "10.5281/zenodo.19826728"
+  "release_tag": "v1.0.1-submission-cleantext",
+  "release_commit": "pending",
+  "zenodo_version_doi": "pending",
+  "zenodo_concept_doi": "pending"
 }

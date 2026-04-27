@@ -57,15 +57,15 @@ Cite the archived sanitized public code release for the manuscript-submission ve
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.0-submission-sanitized`.
+Release tag: `v1.0.1-submission-cleantext`.
 
-Commit: `70248bd9b3e82c150bdd261231cffb107f5a4124`.
+Commit: pending until the release tag is created.
 
-Zenodo DOI: https://doi.org/10.5281/zenodo.19826729.
+Zenodo DOI: pending until the release is archived.
 
-Zenodo concept DOI: https://doi.org/10.5281/zenodo.19826728.
+Zenodo concept DOI: pending until the release is archived.
 
-The current code-availability statement for peer review should cite this sanitized GitHub release, the Zenodo DOI and the submitted S2 Code package.
+The current code-availability statement for peer review should cite the latest archived release, the Zenodo DOI and the submitted S2 Code package.
 
 ## License
 

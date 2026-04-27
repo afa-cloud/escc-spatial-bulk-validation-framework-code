@@ -1,0 +1,199 @@
+{
+  "project": {
+    "name": "escc_splice_isoform_screen",
+    "disease": "ESCC",
+    "article_type": "public_bioinformatics",
+    "data_strategy": "preprocessed_public",
+    "raw_reanalysis": false,
+    "controlled_access_data": false,
+    "wet_lab_validation": false
+  },
+  "data_sources": {
+    "literature": [
+      "NCBI PubMed E-utilities",
+      "NCBI PMC E-utilities"
+    ],
+    "annotation": [
+      "Ensembl REST",
+      "RefSeq",
+      "GENCODE",
+      "MANE",
+      "APPRIS"
+    ],
+    "expression_and_clinical": [
+      "UCSC Xena",
+      "GDC STAR Counts",
+      "cBioPortal"
+    ],
+    "auxiliary_splicing": [
+      "TCGA SpliceSeq"
+    ]
+  },
+  "review_policy": {
+    "require_agent_separation": true,
+    "allowed_verdicts": [
+      "pass",
+      "revise",
+      "reject"
+    ],
+    "escc_absence_wording": "No ESCC same-isoform study was found under the predefined search strategy.",
+    "causality_policy": "Use association or predictive language unless experimental causality is available."
+  },
+  "workflow_stages": [
+    {
+      "id": "candidate_universe",
+      "order": 1,
+      "executor_role": "Annotation Executor",
+      "reviewer_role": "Annotation Reviewer",
+      "required_checks": [
+        "source_traceable",
+        "protein_coding_only",
+        "major_isoform_count_reviewed",
+        "transcript_mapping_reproducible"
+      ]
+    },
+    {
+      "id": "stability_screen",
+      "order": 2,
+      "executor_role": "Expression Executor",
+      "reviewer_role": "Expression Reviewer",
+      "required_checks": [
+        "esophagus_detectable",
+        "tumor_detectable",
+        "missingness_reviewed",
+        "isoform_or_junction_mapping_consistent"
+      ]
+    },
+    {
+      "id": "literature_screen",
+      "order": 3,
+      "executor_role": "Literature Executor",
+      "reviewer_role": "Literature Reviewer",
+      "required_checks": [
+        "pubmed_query_recorded",
+        "pmc_query_recorded",
+        "non_escc_cancer_effect_reviewed",
+        "escc_exclusion_search_complete"
+      ]
+    },
+    {
+      "id": "scoring_review",
+      "order": 4,
+      "executor_role": "Scoring Executor",
+      "reviewer_role": "Scoring Reviewer",
+      "required_checks": [
+        "score_inputs_complete",
+        "top20_rechecked",
+        "reject_reasons_recorded",
+        "shortlist_size_between_3_and_5"
+      ]
+    },
+    {
+      "id": "deep_escc_analysis",
+      "order": 5,
+      "executor_role": "ESCC Analysis Executor",
+      "reviewer_role": "ESCC Analysis Reviewer",
+      "required_checks": [
+        "squamous_subset_used",
+        "gene_level_comparator_included",
+        "clinical_covariates_reviewed",
+        "statistical_limitations_recorded"
+      ]
+    },
+    {
+      "id": "lead_candidate_decision",
+      "order": 6,
+      "executor_role": "Decision Executor",
+      "reviewer_role": "Decision Reviewer",
+      "required_checks": [
+        "isoform_signal_stronger_than_gene_level",
+        "clinical_effect_reproducible",
+        "independent_support_present",
+        "mechanism_not_overclaimed"
+      ]
+    },
+    {
+      "id": "manuscript_review",
+      "order": 7,
+      "executor_role": "Manuscript Agent",
+      "reviewer_role": "Scientific Reviewer",
+      "required_checks": [
+        "novelty_reviewed",
+        "statistical_review_complete",
+        "repro_review_complete",
+        "submission_artifacts_complete"
+      ]
+    }
+  ],
+  "required_columns": {
+    "candidate_master": [
+      "gene_symbol",
+      "ensembl_gene_id",
+      "ensembl_transcript_ids",
+      "isoform_count",
+      "major_isoforms",
+      "isoform_simplicity",
+      "expression_stability",
+      "non_escc_cancer_evidence",
+      "escc_novelty",
+      "clinical_analyzability",
+      "mechanism_targetability",
+      "evidence_score",
+      "escc_novelty_status",
+      "review_status"
+    ],
+    "literature_screening": [
+      "gene_symbol",
+      "query_type",
+      "query_string",
+      "database",
+      "query_date",
+      "pmid",
+      "doi",
+      "cancer_type",
+      "isoform_specific",
+      "is_escc",
+      "executor_agent_id",
+      "reviewer_agent_id",
+      "executor_conclusion",
+      "reviewer_conclusion",
+      "verdict"
+    ],
+    "analysis_registry": [
+      "analysis_id",
+      "candidate_id",
+      "analysis_type",
+      "input_data",
+      "source_version_or_download_date",
+      "script_path",
+      "parameters",
+      "output_artifacts",
+      "executor_agent_id",
+      "reviewer_agent_id",
+      "review_status"
+    ]
+  },
+  "evidence_card_sections": [
+    "Candidate",
+    "Direct Evidence",
+    "Indirect Evidence",
+    "Missing Evidence",
+    "Conflicting Evidence",
+    "Source Log",
+    "Review Status"
+  ],
+  "scoring_weights": {
+    "isoform_simplicity": 0.18,
+    "expression_stability": 0.18,
+    "non_escc_cancer_evidence": 0.2,
+    "escc_novelty": 0.18,
+    "clinical_analyzability": 0.16,
+    "mechanism_targetability": 0.1
+  },
+  "statistical_review_thresholds": {
+    "min_samples": 50,
+    "min_events_per_variable": 10,
+    "max_missing_clinical_rate": 0.2
+  }
+}
+

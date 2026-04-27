@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.tmp
+~$*
+audit/rendered_docx/
+manuscript/
+figures/
+cover_letter/
+*.pdf
+*.docx
+

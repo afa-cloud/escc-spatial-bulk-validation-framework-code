@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the sanitized GitHub release and the associated manuscript."
+title: "ESCC spatial-to-bulk validation framework"
+type: software
+authors:
+  - family-names: Yang
+    given-names: Haoshui
+  - family-names: Ma
+    given-names: Yuqing
+repository-code: "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code"
+license: MIT
+version: "v1.0.0-submission-sanitized"
+date-released: "2026-04-27"
+keywords:
+  - esophageal squamous cell carcinoma
+  - spatial transcriptomics
+  - public bioinformatics
+  - reproducibility
+  - source tables

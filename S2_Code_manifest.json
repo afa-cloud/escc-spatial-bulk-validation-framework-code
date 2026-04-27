@@ -1,0 +1,22 @@
+{
+  "build_time": "2026-04-28T00:00:00",
+  "purpose": "Sanitized supplementary code package for checked PLOS ONE submission with transferability supplement",
+  "exclusions": [
+    "manuscript drafting scripts",
+    "DOCX generation scripts",
+    "cover-letter generation scripts",
+    "internal audit-rendering scripts"
+  ],
+  "included_files": [
+    "README_S2_Code.md",
+    "README_code.md",
+    "S16_data_manifest.tsv",
+    "project_config.yaml",
+    "reproducibility_check.tsv",
+    "requirements.txt",
+    "scripts/public_data_helpers.py",
+    "scripts/run_independent_patient_and_spatial_quant.py",
+    "scripts/run_spatial_axis_deep_validation.py",
+    "scripts/run_transferability_supplement.py"
+  ]
+}

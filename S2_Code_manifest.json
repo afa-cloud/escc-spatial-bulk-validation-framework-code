@@ -17,7 +17,7 @@
   ],
   "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
   "release_tag": "v1.0.5-submission-polished",
-  "release_commit": "recorded_by_release_tag",
-  "zenodo_version_doi": "shown_on_zenodo_release_record",
+  "release_commit": "e853bd15dd9f6b605d32c8af7cc4317c4dc98b3f",
+  "zenodo_version_doi": "10.5281/zenodo.19830454",
   "zenodo_concept_doi": "10.5281/zenodo.19826728"
 }

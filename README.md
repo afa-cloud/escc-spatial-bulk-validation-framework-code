@@ -59,7 +59,9 @@ https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
 Release tag: `v1.0.9-submission-cleanlabels`.
 
-The release commit is recorded by the GitHub tag and the Zenodo related identifier for the archived release.
+Release commit: `64f15e8db07712748f4dd989cc39b7078e897550`.
+
+Zenodo version DOI for this release: https://doi.org/10.5281/zenodo.19831709.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

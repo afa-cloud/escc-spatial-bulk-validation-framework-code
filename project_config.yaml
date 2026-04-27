@@ -75,5 +75,5 @@ reproducibility:
   transferability_table: S3_Transferability_Supplement.xlsx
   public_repository: https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 version_tag: v1.0.9-submission-cleanlabels
-version_doi: assigned_by_zenodo_after_release
+version_doi: 10.5281/zenodo.19831709
 concept_doi: 10.5281/zenodo.19826728

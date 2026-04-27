@@ -22,4 +22,4 @@ This archive contains analysis code and configuration files only. Administrative
 
 ## Archive
 
-The clean-text public code release should be cited with its Zenodo DOI after the release is archived.
+The clean-text public code release should be cited using the latest Zenodo version DOI assigned to the clean GitHub release.

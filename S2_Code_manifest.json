@@ -15,8 +15,8 @@
     "scripts/run_transferability_supplement.py"
   ],
   "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
-  "release_tag": "v1.0.1-submission-cleantext",
-  "release_commit": "pending",
-  "zenodo_version_doi": "pending",
-  "zenodo_concept_doi": "pending"
+  "release_tag": "v1.0.2-submission-cleantext",
+  "release_commit": "recorded_by_git_tag",
+  "zenodo_version_doi": "assigned_by_zenodo_release",
+  "zenodo_concept_doi": "10.5281/zenodo.19826728"
 }

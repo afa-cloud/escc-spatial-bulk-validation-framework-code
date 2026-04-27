@@ -10,7 +10,7 @@ The study is a public-data bioinformatics workflow. It applies a tiered validati
 2. bulk transcriptomic validation, and
 3. source-table reproducibility checks from published supplementary quantitative tables.
 
-The repository is intended to support code availability and reproducibility for the public-data analyses. It does not contain controlled-access data, newly generated human-subject data, manuscript drafts, document-generation scripts, reviewer notes, full-text PDFs, or temporary audit files.
+The repository is intended to support code availability and reproducibility for the public-data analyses. It does not contain controlled-access data, newly generated human-subject data, manuscript drafts, administrative submission files, full-text PDFs, or temporary local files.
 
 ## Repository contents
 
@@ -53,19 +53,17 @@ Run scripts from the repository root after reviewing `project_config.yaml` and t
 
 ## Citation
 
-Cite the archived sanitized public code release for the manuscript-submission version:
+Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.1-submission-cleantext`.
+Release tag to use for the next archive: `v1.0.2-submission-cleantext`.
 
-Commit: pending until the release tag is created.
+The GitHub release page and Zenodo record page should be cited for the exact release commit and DOI after archiving.
 
-Zenodo DOI: pending until the release is archived.
+Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 
-Zenodo concept DOI: pending until the release is archived.
-
-The current code-availability statement for peer review should cite the latest archived release, the Zenodo DOI and the submitted S2 Code package.
+The current code-availability statement for peer review should cite the latest clean archived release, the Zenodo DOI and the submitted S2 Code package.
 
 ## License
 

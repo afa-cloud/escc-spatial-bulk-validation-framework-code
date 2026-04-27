@@ -8,7 +8,7 @@ The study is a public-data bioinformatics workflow. It applies a tiered validati
 
 1. spatially nominated hypotheses,
 2. bulk transcriptomic validation, and
-3. source-table reproducibility checks from published supplementary quantitative tables.
+3. source-table checks from published supplementary quantitative tables.
 
 The repository is intended to support code availability and reproducibility for the public-data analyses. It does not contain controlled-access data, newly generated human-subject data, manuscript drafts, administrative submission files, full-text PDFs, or temporary local files.
 
@@ -19,7 +19,7 @@ The repository is intended to support code availability and reproducibility for 
 - `requirements.txt`: Python dependencies used by the submitted code package.
 - `manifests/`: public-data source manifest.
 - `supporting_information/`: submitted processed tables copied from the manuscript package.
-- `reproducibility_check.tsv`: local reproducibility check summary.
+- `reproducibility_check.tsv`: local check summary.
 - `S2_Code_manifest.json`: manifest for the submitted code package.
 - `.zenodo.json` and `CITATION.cff`: metadata used for DOI archiving.
 
@@ -57,11 +57,9 @@ Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.8-submission-yamlfix`.
+Release tag: `v1.0.9-submission-cleanlabels`.
 
-Release commit: `b8cac318493902c8b57d7524fbeeef01edc1f95b`.
-
-Zenodo version DOI for this release: https://doi.org/10.5281/zenodo.19831355.
+The release commit is recorded by the GitHub tag and the Zenodo related identifier for the archived release.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

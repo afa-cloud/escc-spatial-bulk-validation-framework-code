@@ -8,7 +8,7 @@ This script extends the spatial signature screen with:
 - GSE53625 mapping assessment.
 - GDSC2 ESCA target-class context for axis-relevant genes.
 
-All outputs are evidence artifacts with separate analysis and quality-check batch IDs. The
+All outputs are evidence artifacts with separate analysis and reproducibility-check batch IDs. The
 results are association evidence, not mechanistic proof.
 """
 
@@ -59,8 +59,8 @@ TABLE_ROOT = OUT_ROOT / "results" / "tables"
 REPORT_ROOT = OUT_ROOT / "reports"
 REVIEW_ROOT = OUT_ROOT / "reviews"
 
-ANALYSIS_RUN_ID = "spatial_axis_analysis_001"
-REPRODUCIBILITY_CHECK_ID = "spatial_axis_quality_check_001"
+RUN_LABEL = "spatial_axis_analysis_001"
+CHECK_LABEL = "spatial_axis_check_001"
 RUN_DATE = datetime.now(UTC).date().isoformat()
 
 
@@ -243,7 +243,7 @@ def spearman(x_values: list[float], y_values: list[float]) -> tuple[float, float
     rho = pearson(ranks(xs), ranks(ys))
     if not math.isfinite(rho):
         return rho, 1.0, len(pairs)
-    # Normal approximation. QC artifact flags this as approximate.
+    # Normal approximation. check artifact flags this as approximate.
     z = abs(rho) * math.sqrt(max(len(pairs) - 1, 1))
     p_value = math.erfc(z / math.sqrt(2))
     return rho, min(max(p_value, 0.0), 1.0), len(pairs)
@@ -415,8 +415,8 @@ def association_rows(
                     "panel_mean_axis_low": mean(low_scores),
                     "panel_high_minus_low": mean(high_scores) - mean(low_scores),
                     "mann_whitney_p": p_mw,
-                    "analysis_run_id": ANALYSIS_RUN_ID,
-                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                    "run_label": RUN_LABEL,
+                    "check_label": CHECK_LABEL,
                 }
             )
     fdr_s = bh_fdr([float(row["spearman_p_approx"]) for row in rows])
@@ -589,8 +589,8 @@ def gse47404_clinical_rows(samples: list[str], metadata: dict[str, dict[str, str
                     "mean_axis_high_group": mean(high_scores),
                     "high_minus_low": mean(high_scores) - mean(low_scores),
                     "mann_whitney_p": mann_whitney_p(low_scores, high_scores),
-                    "analysis_run_id": ANALYSIS_RUN_ID,
-                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                    "run_label": RUN_LABEL,
+                    "check_label": CHECK_LABEL,
                 }
             )
     fdr = bh_fdr([float(row["mann_whitney_p"]) for row in rows])
@@ -636,8 +636,8 @@ def run_gse47404() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dic
             "gene_symbol": gene,
             "probe_count": probe_counts.get(gene, 0),
             "used_in_axis_or_panel": "yes",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         }
         for gene in sorted(relevant_genes)
     ]
@@ -704,9 +704,9 @@ def run_gse53625_assessment() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "raw_feature_rows_checked": feature_rows,
             "direct_axis_gene_symbol_hits_in_raw_annotation": direct_hits,
             "validation_status": "blocked_no_reliable_feature_to_gene_symbol_map",
-            "qc_note": "GPL18109 matrix uses Agilent feature numbers. GPL18109 has no gene symbol column; first RAW member uses internal probe/gene names and yielded zero direct axis gene-symbol hits.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_note": "GPL18109 matrix uses Agilent feature numbers. GPL18109 has no gene symbol column; first RAW member uses internal probe/gene names and yielded zero direct axis gene-symbol hits.",
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         }
     )
     return rows, {"dataset": "GSE53625", "status": rows[0]["validation_status"], "n_samples": sample_count}
@@ -768,8 +768,8 @@ def run_gdsc() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[st
                     "min_z_score": float(item["min_z_score"]),
                     "max_z_score": float(item["max_z_score"]),
                     "interpretation_limit": "GDSC2 ESCA cell-line drug response only; not correlated with axis expression in this artifact.",
-                    "analysis_run_id": ANALYSIS_RUN_ID,
-                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                    "run_label": RUN_LABEL,
+                    "check_label": CHECK_LABEL,
                 }
             )
         axis_text = sub[["DRUG_NAME", "PUTATIVE_TARGET", "PATHWAY_NAME"]].fillna("").astype(str).agg(" ".join, axis=1)
@@ -785,8 +785,8 @@ def run_gdsc() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[st
                     "axis_class_drug_rows": len(sub),
                     "axis_class_drug_count": int(sub["DRUG_NAME"].nunique()),
                     "coverage_note": "exact target match" if int(exact.sum()) else "covered only by broader pathway class or not covered",
-                    "analysis_run_id": ANALYSIS_RUN_ID,
-                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                    "run_label": RUN_LABEL,
+                    "check_label": CHECK_LABEL,
                 }
             )
     return rows, coverage, manifest, {
@@ -814,8 +814,8 @@ def write_report(summary: dict[str, Any]) -> None:
         "# Deep Axis Validation Report",
         "",
         f"Run date: {RUN_DATE}",
-        f"Analysis batch: `{ANALYSIS_RUN_ID}`",
-        f"Reproducibility check: `{REPRODUCIBILITY_CHECK_ID}`",
+        f"Run label: `{RUN_LABEL}`",
+        f"Check: `{CHECK_LABEL}`",
         "",
         "## Scope",
         "",
@@ -892,7 +892,7 @@ def write_report(summary: dict[str, Any]) -> None:
                 hits=row["direct_axis_gene_symbol_hits_in_raw_annotation"],
             )
         )
-    lines.extend(["", "## QC conclusion", ""])
+    lines.extend(["", "## check conclusion", ""])
     lines.append(
         "Assessment: supported_with_limitations. TCGA and GSE47404 analyses completed; GSE53625 cannot be used for gene-level axis validation without a reliable feature-to-gene-symbol map; GDSC2 supports drug-response context but not causal target sensitivity."
     )
@@ -902,58 +902,58 @@ def write_report(summary: dict[str, Any]) -> None:
 def write_reviews(summary: dict[str, Any]) -> str:
     review_rows = [
         {
-            "stage": "quality_check_structure",
-            "check": "independent_check_roles",
-            "status": "pass" if ANALYSIS_RUN_ID != REPRODUCIBILITY_CHECK_ID else "reject",
-            "check_comment": "Analysis and quality-check batch IDs are distinct.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "stage": "check_structure",
+            "check": "separate_check_labels",
+            "status": "pass" if RUN_LABEL != CHECK_LABEL else "reject",
+            "check_comment": "Analysis and reproducibility-check batch IDs are distinct.",
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "tcga_immune_pathway",
             "check": "tcga_escc_bulk_associations",
             "status": "supported_with_limitations",
             "check_comment": "Association analyses completed in TCGA ESCC; Spearman p-values are approximate and BH-adjusted.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "geo_independent_bulk",
             "check": "gse47404_gene_mapping",
             "status": "supported_with_limitations" if summary["gse47404_meta"].get("status") == "completed" else "reject",
             "check_comment": "GSE47404 is tumor-only and lacks survival in matrix metadata; usable for expression correlations and pathology association.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "geo_independent_bulk",
             "check": "gse53625_mapping",
             "status": "reject",
             "check_comment": "GSE53625 has useful clinical metadata but public matrix cannot be reliably mapped to gene symbols from GPL18109/first RAW member.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "drug_sensitivity",
             "check": "gdsc2_esca_drug_response",
             "status": "supported_with_limitations" if summary["gdsc_meta"].get("status") == "completed" else "reject",
             "check_comment": "GDSC2 ESCA drug response is summarized by drug target class; no cell-line expression join was performed.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "statistics",
             "check": "claims_and_multiplicity",
             "status": "supported_with_limitations",
             "check_comment": "Use association/prediction wording only. Do not claim causality, TLS formation, CAF-Epi signaling, or drug sensitivity mechanisms without experimental validation.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
     ]
     write_tsv(
         REVIEW_ROOT / "deep_axis_validation_review.tsv",
         review_rows,
-        ["stage", "check", "status", "check_comment", "analysis_run_id", "reproducibility_check_id"],
+        ["stage", "check", "status", "check_comment", "run_label", "check_label"],
     )
     return "supported_with_limitations"
 
@@ -988,8 +988,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
     write_tsv(
@@ -1018,8 +1018,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
 
@@ -1050,8 +1050,8 @@ def main() -> None:
             "panel_high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
     write_tsv(
@@ -1073,14 +1073,14 @@ def main() -> None:
             "high_minus_low",
             "mann_whitney_p",
             "mann_whitney_fdr",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
     write_tsv(
         TABLE_ROOT / "deep_axis_geo_gse47404_gene_coverage.tsv",
         gse47404_meta.get("coverage_rows", []),
-        ["dataset", "gene_symbol", "probe_count", "used_in_axis_or_panel", "analysis_run_id", "reproducibility_check_id"],
+        ["dataset", "gene_symbol", "probe_count", "used_in_axis_or_panel", "run_label", "check_label"],
     )
     write_tsv(
         TABLE_ROOT / "deep_axis_geo_download_manifest.tsv",
@@ -1101,9 +1101,9 @@ def main() -> None:
             "raw_feature_rows_checked",
             "direct_axis_gene_symbol_hits_in_raw_annotation",
             "validation_status",
-            "qc_note",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "check_note",
+            "run_label",
+            "check_label",
         ],
     )
 
@@ -1124,8 +1124,8 @@ def main() -> None:
             "min_z_score",
             "max_z_score",
             "interpretation_limit",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
     write_tsv(
@@ -1138,8 +1138,8 @@ def main() -> None:
             "axis_class_drug_rows",
             "axis_class_drug_count",
             "coverage_note",
-            "analysis_run_id",
-            "reproducibility_check_id",
+            "run_label",
+            "check_label",
         ],
     )
     write_tsv(
@@ -1152,9 +1152,9 @@ def main() -> None:
         "status": "completed",
         "reproducibility_status": "supported_with_limitations",
         "run_date": RUN_DATE,
-        "analysis_run_id": ANALYSIS_RUN_ID,
-        "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
-        "independent_quality_check_recorded": ANALYSIS_RUN_ID != REPRODUCIBILITY_CHECK_ID,
+        "run_label": RUN_LABEL,
+        "check_label": CHECK_LABEL,
+        "independent_check_recorded": RUN_LABEL != CHECK_LABEL,
         "tcga_meta": tcga_meta,
         "gse47404_meta": gse47404_meta,
         "gse53625_meta": gse53625_meta,

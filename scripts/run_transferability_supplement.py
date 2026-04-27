@@ -61,8 +61,8 @@ import run_spatial_axis_deep_validation as deep  # noqa: E402
 
 
 RUN_DATE = datetime.now(UTC).date().isoformat()
-ANALYSIS_RUN_ID = "transferability_analysis_001"
-REPRODUCIBILITY_CHECK_ID = "transferability_quality_check_001"
+RUN_LABEL = "transferability_analysis_001"
+CHECK_LABEL = "transferability_check_001"
 
 
 def show_help_if_requested() -> None:
@@ -273,8 +273,8 @@ def compute_associations(layers: dict[str, tuple[list[str], dict[str, list[float
                                 "spearman_rho": rho,
                                 "spearman_p_asymptotic": p_value,
                                 "comparison_expectation": FOCUS_COMPARISONS.get((signature_id, panel_id), "contextual"),
-                                "analysis_run_id": ANALYSIS_RUN_ID,
-                                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                                "run_label": RUN_LABEL,
+                                "check_label": CHECK_LABEL,
                             }
                         )
     fdr = deep.bh_fdr([float(row["spearman_p_asymptotic"]) for row in rows])
@@ -290,7 +290,7 @@ def load_hra003627_rows() -> list[dict[str, Any]]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle, delimiter="\t"):
             if row.get("signature_id") in source_ids:
-                rows.append({**row, "analysis_run_id": ANALYSIS_RUN_ID, "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID})
+                rows.append({**row, "run_label": RUN_LABEL, "check_label": CHECK_LABEL})
     return rows
 
 
@@ -339,8 +339,8 @@ def load_hra008846_signature_hits() -> list[dict[str, Any]]:
                             "fdr": fdr,
                             "significance_status": significance_label(pvalue, fdr),
                             "interpretation": "supportive source-table row for transferability phenotype; not raw spatial reanalysis",
-                            "analysis_run_id": ANALYSIS_RUN_ID,
-                            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                            "run_label": RUN_LABEL,
+                            "check_label": CHECK_LABEL,
                         }
                     )
                 continue
@@ -366,8 +366,8 @@ def load_hra008846_signature_hits() -> list[dict[str, Any]]:
                     "fdr": fdr,
                     "significance_status": significance_label(pvalue, fdr),
                     "interpretation": "supportive source-table row for transferability phenotype; not raw spatial reanalysis",
-                    "analysis_run_id": ANALYSIS_RUN_ID,
-                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                    "run_label": RUN_LABEL,
+                    "check_label": CHECK_LABEL,
                 }
             )
     return rows
@@ -397,8 +397,8 @@ def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
                             "logrank_p": "",
                             "logrank_fdr": "",
                             "interpretation": "precomputed public bulk layer reused from earlier successful workflow run",
-                            "analysis_run_id": ANALYSIS_RUN_ID,
-                            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                            "run_label": RUN_LABEL,
+                            "check_label": CHECK_LABEL,
                         }
                     )
     if surv_path.exists():
@@ -420,8 +420,8 @@ def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
                             "logrank_p": row.get("logrank_p", ""),
                             "logrank_fdr": row.get("logrank_fdr", ""),
                             "interpretation": "precomputed public bulk survival layer reused; no prognostic claim unless supported",
-                            "analysis_run_id": ANALYSIS_RUN_ID,
-                            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                            "run_label": RUN_LABEL,
+                            "check_label": CHECK_LABEL,
                         }
                     )
     return rows
@@ -514,8 +514,8 @@ def summarize_transferability(
                 "precomputed_tcga_layer": tcga_bulk_note,
                 "transferability_assessment": gate_status,
                 "interpretation_scope": "supports framework transferability at association/source-table level only; not a new mechanism or clinical biomarker",
-                "analysis_run_id": ANALYSIS_RUN_ID,
-                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+                "run_label": RUN_LABEL,
+                "check_label": CHECK_LABEL,
             }
         )
     return summary
@@ -577,7 +577,7 @@ def write_report(
             "",
             "## Reproducibility Status",
             "",
-            "- Analysis and quality-check batch IDs are distinct.",
+            "- Analysis and reproducibility-check batch IDs are distinct.",
             "- Source-table rows are treated as published supplementary quantitative tables, not raw spatial matrices.",
             "- Bulk associations are interpreted as reproducibility/context checks only.",
             "- The analysis supports transferability of the framework, not the discovery of a new biological mechanism.",
@@ -594,41 +594,41 @@ def write_report(
 
 
 def write_review(summary_rows: list[dict[str, Any]], manifest_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    analysis_ok = ANALYSIS_RUN_ID != REPRODUCIBILITY_CHECK_ID
+    analysis_ok = RUN_LABEL != CHECK_LABEL
     bulk_ok = any(row.get("status") == "completed" for row in manifest_rows)
     source_ok = all(row.get("transferability_assessment") == "supported_with_limitations" for row in summary_rows)
     rows = [
         {
-            "stage": "quality_check_structure",
-            "check": "independent_quality_check_recorded",
+            "stage": "check_structure",
+            "check": "independent_check_recorded",
             "status": "pass" if analysis_ok else "reject",
-            "check_comment": "Analysis and quality-check batch IDs are distinct." if analysis_ok else "Analysis and quality-check batch IDs must differ.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": "Analysis and reproducibility-check batch IDs are distinct." if analysis_ok else "Analysis and reproducibility-check batch IDs must differ.",
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "bulk_validation",
             "check": "tcga_or_geo_completed",
             "status": "supported_with_limitations" if bulk_ok else "reject",
             "check_comment": "At least one public bulk layer loaded; interpret as association-level evidence.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "source_table_reproducibility",
             "check": "hra003627_stage_trend_present",
             "status": "supported_with_limitations" if source_ok else "limited_support",
             "check_comment": "HRA003627 source-table trends support transferability demonstration; source tables are not raw spatial matrices.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
         {
             "stage": "interpretation_scope",
             "check": "no_new_mechanistic_or_clinical_claim",
             "status": "pass",
             "check_comment": "Use only as supplemental framework portability evidence.",
-            "analysis_run_id": ANALYSIS_RUN_ID,
-            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "run_label": RUN_LABEL,
+            "check_label": CHECK_LABEL,
         },
     ]
     return rows
@@ -676,8 +676,8 @@ def main() -> None:
         "spearman_p_asymptotic",
         "spearman_fdr_bh",
         "comparison_expectation",
-        "analysis_run_id",
-        "reproducibility_check_id",
+        "run_label",
+        "check_label",
     ]
     source_fields = [
         "dataset",
@@ -694,8 +694,8 @@ def main() -> None:
         "spearman_stage_n",
         "escc_vs_normal_mann_whitney_p",
         "interpretation",
-        "analysis_run_id",
-        "reproducibility_check_id",
+        "run_label",
+        "check_label",
     ]
     h846_fields = [
         "dataset",
@@ -709,8 +709,8 @@ def main() -> None:
         "fdr",
         "significance_status",
         "interpretation",
-        "analysis_run_id",
-        "reproducibility_check_id",
+        "run_label",
+        "check_label",
     ]
     tcga_precomputed_fields = [
         "dataset",
@@ -726,8 +726,8 @@ def main() -> None:
         "logrank_p",
         "logrank_fdr",
         "interpretation",
-        "analysis_run_id",
-        "reproducibility_check_id",
+        "run_label",
+        "check_label",
     ]
     summary_fields = [
         "signature_id",
@@ -745,11 +745,11 @@ def main() -> None:
         "precomputed_tcga_layer",
         "transferability_assessment",
         "interpretation_scope",
-        "analysis_run_id",
-        "reproducibility_check_id",
+        "run_label",
+        "check_label",
     ]
     manifest_fields = ["dataset", "status", "n_samples", "n_genes", "n_probe_mapped_genes", "error"]
-    check_fields = ["stage", "check", "status", "check_comment", "analysis_run_id", "reproducibility_check_id"]
+    check_fields = ["stage", "check", "status", "check_comment", "run_label", "check_label"]
 
     table_paths = {
         "S22_transferability_bulk_assoc.tsv": (association_rows, association_fields),

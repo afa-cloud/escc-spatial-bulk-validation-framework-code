@@ -5,8 +5,8 @@ scripts/run_transferability_supplement.py	supplementary_analysis_script	pass	Tra
 scripts/assemble_s1_table.py	workbook_assembly_helper	pass	Assembles the S1 workbook layout from generated TSV outputs when source tables are available locally.
 scripts/public_data_helpers.py	shared_helper	pass	Shared public-data retrieval and statistics helper functions.
 project_config.yaml	configuration	pass	Project scope and analysis configuration.
-S16_data_manifest.tsv	data_manifest	pass	Public source manifest with sanitized paths.
+S16_data_manifest.tsv	data_manifest	pass	Public source manifest with curated paths.
 README_S2_Code.md	documentation	pass	S2 Code package description.
 README_code.md	documentation	pass	Analysis script run order and scope.
 requirements.txt	environment	pass	Python package requirements for analysis scripts.
-S2_Code_manifest.json	code_manifest	pass	Sanitized submitted code manifest.
+S2_Code_manifest.json	code_manifest	pass	Curated submitted code manifest.

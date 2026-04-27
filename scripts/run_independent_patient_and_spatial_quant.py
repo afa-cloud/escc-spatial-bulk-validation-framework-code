@@ -69,8 +69,8 @@ DELIVERABLE_ROOT = OUT_ROOT / "deliverables"
 CACHE_ROOT = DATA_ROOT / "ensembl_sequence_cache"
 
 RUN_DATE = datetime.now(UTC).date().isoformat()
-ANALYSIS_BATCH_ID = "independent_spatial_analysis_001"
-QUALITY_CHECK_ID = "independent_spatial_quality_check_001"
+ANALYSIS_RUN_ID = "independent_spatial_analysis_001"
+REPRODUCIBILITY_CHECK_ID = "independent_spatial_quality_check_001"
 
 ENSEMBL_REST = "https://rest.ensembl.org"
 HTTP_CLIENT_ID = "escc-spatial-validation/0.2"
@@ -424,8 +424,8 @@ def build_target_sequence_index(probe_lengths: set[int]) -> tuple[dict[tuple[int
                 "n_transcripts_queried": bundle.get("n_transcripts_queried", 0),
                 "n_sequences_indexed": bundle.get("n_sequences", 0),
                 "total_bases_indexed": bundle.get("total_bases_indexed", 0),
-                "analysis_batch_id": ANALYSIS_BATCH_ID,
-                "quality_check_id": QUALITY_CHECK_ID,
+                "analysis_run_id": ANALYSIS_RUN_ID,
+                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
             }
         )
         for seq_item in bundle.get("sequences", []):
@@ -480,8 +480,8 @@ def map_features_to_axis_genes(features: list[dict[str, Any]]) -> tuple[list[dic
                     "accepted_gene": matched[0] if len(matched) == 1 else "",
                     "match_type": match_type,
                     "specificity_scope": "unambiguous_within_axis_target_ensembl_sequences",
-                    "analysis_batch_id": ANALYSIS_BATCH_ID,
-                    "quality_check_id": QUALITY_CHECK_ID,
+                    "analysis_run_id": ANALYSIS_RUN_ID,
+                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                 }
             )
     return mapped_rows, bundle_rows
@@ -579,7 +579,7 @@ def survival_rows_for_gse53625(
         if coverage < 0.6 or len(tumor_records) < 50:
             status = "reject_low_mapping_coverage"
         elif math.isfinite(p_value) and p_value < 0.05:
-            status = "pass_with_limits"
+            status = "supported_with_limitations"
         else:
             status = "no_survival_support"
         rows.append(
@@ -604,8 +604,8 @@ def survival_rows_for_gse53625(
                 "event_rate_ratio_approx_ci_high": ci_high,
                 "validation_status": status,
                 "qc_note": "Median cutpoint is fixed within tumor cohort; rate ratio is an event-rate approximation, not a Cox model. Survival support requires logrank p<0.05.",
-                "analysis_batch_id": ANALYSIS_BATCH_ID,
-                "quality_check_id": QUALITY_CHECK_ID,
+                "analysis_run_id": ANALYSIS_RUN_ID,
+                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
             }
         )
     return rows
@@ -641,7 +641,7 @@ def tumor_normal_rows_for_gse53625(
         if coverage < 0.6 or len(deltas) < 50:
             status = "reject_low_mapping_coverage"
         elif p_value < 0.05:
-            status = "pass_with_limits"
+            status = "supported_with_limitations"
         else:
             status = "no_tumor_normal_support"
         rows.append(
@@ -661,8 +661,8 @@ def tumor_normal_rows_for_gse53625(
                 "two_sided_sign_test_p": p_value,
                 "validation_status": status,
                 "qc_note": "Paired sign test uses tumor-normal pairs after target-sequence probe rescue.",
-                "analysis_batch_id": ANALYSIS_BATCH_ID,
-                "quality_check_id": QUALITY_CHECK_ID,
+                "analysis_run_id": ANALYSIS_RUN_ID,
+                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
             }
         )
     return rows
@@ -702,8 +702,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
                     "exact_probe_count": sum(1 for row in probe_rows if row.get("match_type") == "exact"),
                     "one_mismatch_probe_count": sum(1 for row in probe_rows if row.get("match_type") == "one_mismatch"),
                     "mapped_in_expression_matrix": "yes" if gene in expr else "no",
-                    "analysis_batch_id": ANALYSIS_BATCH_ID,
-                    "quality_check_id": QUALITY_CHECK_ID,
+                    "analysis_run_id": ANALYSIS_RUN_ID,
+                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                 }
             )
     survival_rows = survival_rows_for_gse53625(samples, metadata, expr)
@@ -722,8 +722,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "accepted_gene",
             "match_type",
             "specificity_scope",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     write_tsv(
@@ -739,8 +739,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "n_transcripts_queried",
             "n_sequences_indexed",
             "total_bases_indexed",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     write_tsv(
@@ -754,8 +754,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "exact_probe_count",
             "one_mismatch_probe_count",
             "mapped_in_expression_matrix",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     write_tsv(
@@ -782,8 +782,8 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "event_rate_ratio_approx_ci_high",
             "validation_status",
             "qc_note",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     write_tsv(
@@ -805,26 +805,26 @@ def run_gse53625_rescue() -> dict[str, Any]:
             "two_sided_sign_test_p",
             "validation_status",
             "qc_note",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     survival_passed_axes = [
         row["axis_id"]
         for row in survival_rows
-        if str(row.get("validation_status")) == "pass_with_limits"
+        if str(row.get("validation_status")) == "supported_with_limitations"
     ]
     paired_passed_axes = [
         row["axis_id"]
         for row in paired_rows
-        if str(row.get("validation_status")) == "pass_with_limits"
+        if str(row.get("validation_status")) == "supported_with_limitations"
     ]
     if survival_passed_axes and paired_passed_axes:
-        status = "pass_with_limits"
+        status = "supported_with_limitations"
     elif paired_passed_axes:
-        status = "revise_tumor_normal_supported_survival_not_supported"
+        status = "limited_support_tumor_normal_supported_survival_not_supported"
     elif survival_passed_axes:
-        status = "revise_survival_only_without_paired_support"
+        status = "limited_support_survival_only_without_paired_support"
     else:
         status = "reject_low_mapping_or_no_patient_support"
     return {
@@ -883,8 +883,8 @@ def hra003627_quantification() -> tuple[list[dict[str, Any]], dict[str, Any]]:
                     "spearman_stage_n": n_trend,
                     "escc_vs_normal_mann_whitney_p": p_cancer,
                     "interpretation": "source-table ROI-level progression quantification; not direct CAF-JAG1-NOTCH1 ligand-receptor evidence",
-                    "analysis_batch_id": ANALYSIS_BATCH_ID,
-                    "quality_check_id": QUALITY_CHECK_ID,
+                    "analysis_run_id": ANALYSIS_RUN_ID,
+                    "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                 }
             )
     write_tsv(
@@ -905,8 +905,8 @@ def hra003627_quantification() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "spearman_stage_n",
             "escc_vs_normal_mann_whitney_p",
             "interpretation",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     return rows, {"status": "completed", "n_rows": len(rows), "n_roi": int(df.shape[0])}
@@ -965,8 +965,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                             "significance_status": significance_status(pvalue, fdr),
                             "axis_membership": axis_membership(gene),
                             "interpretation": "published source-table perturbation row for axis-relevant gene",
-                            "analysis_batch_id": ANALYSIS_BATCH_ID,
-                            "quality_check_id": QUALITY_CHECK_ID,
+                            "analysis_run_id": ANALYSIS_RUN_ID,
+                            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                         }
                     )
             elif "expression patterns" in sheet:
@@ -992,8 +992,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                             "significance_status": significance_status(pvalue_f, fdr_f),
                             "axis_membership": axis_membership(gene),
                             "interpretation": "published source-table DEG hit for axis-relevant gene",
-                            "analysis_batch_id": ANALYSIS_BATCH_ID,
-                            "quality_check_id": QUALITY_CHECK_ID,
+                            "analysis_run_id": ANALYSIS_RUN_ID,
+                            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                         }
                     )
             else:
@@ -1016,8 +1016,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
                         "significance_status": significance_status(pvalue, fdr),
                         "axis_membership": axis_membership(gene),
                         "interpretation": "published source-table DEG hit for axis-relevant gene",
-                        "analysis_batch_id": ANALYSIS_BATCH_ID,
-                        "quality_check_id": QUALITY_CHECK_ID,
+                        "analysis_run_id": ANALYSIS_RUN_ID,
+                        "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                     }
                 )
     write_tsv(
@@ -1037,8 +1037,8 @@ def hra008846_deg_hits(table_path: Path) -> list[dict[str, Any]]:
             "significance_status",
             "axis_membership",
             "interpretation",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     return rows
@@ -1096,8 +1096,8 @@ def hra008846_cell_abundance(table_path: Path) -> list[dict[str, Any]]:
                         "spearman_stage_p_approx": p_value,
                         "spearman_stage_n": n_trend,
                         "relevance": relevance,
-                        "analysis_batch_id": ANALYSIS_BATCH_ID,
-                        "quality_check_id": QUALITY_CHECK_ID,
+                        "analysis_run_id": ANALYSIS_RUN_ID,
+                        "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
                     }
                 )
     write_tsv(
@@ -1117,8 +1117,8 @@ def hra008846_cell_abundance(table_path: Path) -> list[dict[str, Any]]:
             "spearman_stage_p_approx",
             "spearman_stage_n",
             "relevance",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     return rows
@@ -1159,8 +1159,8 @@ def hra008846_ligand_receptor(table_path: Path) -> list[dict[str, Any]]:
                 "axis_hit_genes": hit_genes,
                 "axis_membership": sorted({axis for gene in hit_genes for axis in axis_membership(gene)}),
                 "direct_jag1_notch1_flag": "yes" if direct_jag_notch else "no",
-                "analysis_batch_id": ANALYSIS_BATCH_ID,
-                "quality_check_id": QUALITY_CHECK_ID,
+                "analysis_run_id": ANALYSIS_RUN_ID,
+                "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
             }
         )
     write_tsv(
@@ -1182,8 +1182,8 @@ def hra008846_ligand_receptor(table_path: Path) -> list[dict[str, Any]]:
             "axis_hit_genes",
             "axis_membership",
             "direct_jag1_notch1_flag",
-            "analysis_batch_id",
-            "quality_check_id",
+            "analysis_run_id",
+            "reproducibility_check_id",
         ],
     )
     return rows
@@ -1218,7 +1218,7 @@ def run_spatial_source_table_quantification() -> dict[str, Any]:
         if str(row.get("significance_status")) in {"significant_fdr_lt_0.05", "p_only_lt_0.05_no_fdr"}
     ]
     direct_jag_notch = [row for row in lr_rows if row.get("direct_jag1_notch1_flag") == "yes"]
-    status = "pass_with_limits" if deg_rows and cell_rows and lr_rows else "revise_missing_source_table_component"
+    status = "supported_with_limitations" if deg_rows and cell_rows and lr_rows else "limited_missing_source_table_component"
     return {
         "status": status,
         "download_manifest": manifest,
@@ -1239,28 +1239,28 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
     spatial = summary["spatial_source_tables"]
     gse_status = patient.get("status", "failed")
     spatial_status = spatial.get("status", "failed")
-    probe_status = "pass_with_limits" if patient.get("n_accepted_probe_rows", 0) and patient.get("n_genes_mapped", 0) else "reject"
+    probe_status = "supported_with_limitations" if patient.get("n_accepted_probe_rows", 0) and patient.get("n_genes_mapped", 0) else "reject"
     patient_test_status = (
-        "pass_with_limits"
-        if str(gse_status) == "pass_with_limits"
-        else "revise" if str(gse_status).startswith("revise") else "reject"
+        "supported_with_limitations"
+        if str(gse_status) == "supported_with_limitations"
+        else "limited_support" if str(gse_status).startswith("limited_support") else "reject"
     )
     rows = [
         {
             "stage": "independent_patient_validation",
-            "check": "independent_qc_roles",
-            "status": "pass" if ANALYSIS_BATCH_ID != QUALITY_CHECK_ID else "reject",
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": "Analysis and quality-check batch IDs are distinct.",
+            "check": "independent_check_roles",
+            "status": "pass" if ANALYSIS_RUN_ID != REPRODUCIBILITY_CHECK_ID else "reject",
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": "Analysis and quality-check batch IDs are distinct.",
         },
         {
             "stage": "independent_patient_validation",
             "check": "gse53625_probe_sequence_rescue",
             "status": probe_status,
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": (
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": (
                 f"Accepted probes={patient.get('n_accepted_probe_rows', 0)}; "
                 f"mapped genes={','.join(patient.get('mapped_genes', [])) or 'none'}. "
                 "Mapping is target-sequence rescue, not a full genome-wide probe specificity assessment."
@@ -1270,9 +1270,9 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "stage": "independent_patient_validation",
             "check": "gse53625_survival_and_paired_tests",
             "status": patient_test_status,
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": (
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": (
                 "Paired tumor-normal validation passes where sign-test support is present; "
                 "survival/prognostic validation is not supported unless logrank p<0.05."
             ),
@@ -1280,18 +1280,18 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
         {
             "stage": "spatial_source_table_quantification",
             "check": "hra003627_roi_source_table",
-            "status": "pass_with_limits" if spatial.get("hra003627", {}).get("status") == "completed" else "reject",
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": "Quantifies ROI-level D&K/progression signatures; does not directly test CAF-Epi/JAG1-NOTCH1.",
+            "status": "supported_with_limitations" if spatial.get("hra003627", {}).get("status") == "completed" else "reject",
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": "Quantifies ROI-level D&K/progression signatures; does not directly test CAF-Epi/JAG1-NOTCH1.",
         },
         {
             "stage": "spatial_source_table_quantification",
             "check": "hra008846_deg_cell_lr_tables",
             "status": spatial_status,
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": (
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": (
                 f"axis source-table rows={len(spatial.get('hra008846_deg_rows', []))}; "
                 f"significant or p-only rows={spatial.get('n_significant_or_p_only_deg_rows', 0)}; "
                 f"cell abundance rows={len(spatial.get('hra008846_cell_rows', []))}; "
@@ -1304,9 +1304,9 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "stage": "interpretation_status",
             "check": "evidence_strength_after_sensitivity",
             "status": "limited_support" if spatial_status.startswith("pass") else "not_supported",
-            "analysis_batch_id": ANALYSIS_BATCH_ID,
-            "quality_check_id": QUALITY_CHECK_ID,
-            "qc_comment": (
+            "analysis_run_id": ANALYSIS_RUN_ID,
+            "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
+            "check_comment": (
                 "Use these results for association/source-table reproducibility only. "
                 "Do not claim independent survival validation or direct CAF-Epi JAG1-NOTCH1 LR evidence."
             ),
@@ -1315,7 +1315,7 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
     write_tsv(
         REVIEW_ROOT / "independent_patient_and_spatial_quant_review.tsv",
         rows,
-        ["stage", "check", "status", "analysis_batch_id", "quality_check_id", "qc_comment"],
+        ["stage", "check", "status", "analysis_run_id", "reproducibility_check_id", "check_comment"],
     )
     return rows
 
@@ -1356,8 +1356,8 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
         "# Independent Patient And Spatial Source-Table Quantification",
         "",
         f"Run date: {RUN_DATE}",
-        f"Analysis batch: `{ANALYSIS_BATCH_ID}`",
-        f"Quality check: `{QUALITY_CHECK_ID}`",
+        f"Analysis batch: `{ANALYSIS_RUN_ID}`",
+        f"Reproducibility check: `{REPRODUCIBILITY_CHECK_ID}`",
         "",
         "## Bottom line",
         "",
@@ -1448,7 +1448,7 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
         )
     report_lines.extend(["", "## Reproducibility status", ""])
     for row in review_rows:
-        report_lines.append(f"- {row['stage']} / {row['check']}: `{row['status']}` - {row['qc_comment']}")
+        report_lines.append(f"- {row['stage']} / {row['check']}: `{row['status']}` - {row['check_comment']}")
     report_lines.extend(
         [
             "",
@@ -1468,8 +1468,8 @@ def write_report(summary: dict[str, Any], review_rows: list[dict[str, Any]]) -> 
 def write_summary(summary: dict[str, Any]) -> None:
     compact = {
         "run_date": RUN_DATE,
-        "analysis_batch_id": ANALYSIS_BATCH_ID,
-        "quality_check_id": QUALITY_CHECK_ID,
+        "analysis_run_id": ANALYSIS_RUN_ID,
+        "reproducibility_check_id": REPRODUCIBILITY_CHECK_ID,
         "gse53625": {
             key: value
             for key, value in summary["gse53625"].items()
@@ -1516,7 +1516,7 @@ def write_addendum(summary: dict[str, Any]) -> None:
         "- The HRA008846 source-table results can be moved from background citation into a reproducible results subsection.",
         "- The HRA003627 source-table results can support a progression/keratinization spatial context paragraph.",
         "- GSE53625 should be used as sequence-rescued paired tumor-normal support only; this run does not support an independent survival/prognostic claim.",
-        "- The CAF/JAG1-NOTCH1 wording should be revised to CAF/ECM stromal-remodeling context unless direct JAG1-NOTCH1 ligand-receptor evidence is added.",
+        "- The CAF/JAG1-NOTCH1 wording should be limited_supportd to CAF/ECM stromal-remodeling context unless direct JAG1-NOTCH1 ligand-receptor evidence is added.",
     ]
     (DELIVERABLE_ROOT / "spatial_axis_manuscript_addendum_independent_validation.md").write_text(
         "\n".join(lines) + "\n",

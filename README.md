@@ -53,13 +53,19 @@ Run scripts from the repository root after reviewing `project_config.yaml` and t
 
 ## Citation
 
-Cite the sanitized public code release for the manuscript-submission version:
+Cite the archived sanitized public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
 Release tag: `v1.0.0-submission-sanitized`.
 
-The current code-availability statement for peer review should cite this sanitized GitHub release and the submitted S2 Code package.
+Commit: `70248bd9b3e82c150bdd261231cffb107f5a4124`.
+
+Zenodo DOI: https://doi.org/10.5281/zenodo.19826729.
+
+Zenodo concept DOI: https://doi.org/10.5281/zenodo.19826728.
+
+The current code-availability statement for peer review should cite this sanitized GitHub release, the Zenodo DOI and the submitted S2 Code package.
 
 ## License
 

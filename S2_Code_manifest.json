@@ -18,5 +18,10 @@
     "scripts/run_independent_patient_and_spatial_quant.py",
     "scripts/run_spatial_axis_deep_validation.py",
     "scripts/run_transferability_supplement.py"
-  ]
+  ],
+  "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
+  "release_tag": "v1.0.0-submission-sanitized",
+  "release_commit": "70248bd9b3e82c150bdd261231cffb107f5a4124",
+  "zenodo_version_doi": "10.5281/zenodo.19826729",
+  "zenodo_concept_doi": "10.5281/zenodo.19826728"
 }

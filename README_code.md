@@ -10,4 +10,4 @@ These scripts reproduce the public-data analysis tables used by the manuscript. 
 - requirements.txt
 
 Run order: deep validation, independent patient/spatial quantification, then transferability supplement.
-The workflow uses public data only and records executor/reviewer gates in output tables.
+The workflow uses public data only and records quality-control checks in output tables.

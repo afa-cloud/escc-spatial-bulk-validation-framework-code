@@ -22,4 +22,4 @@ This archive contains analysis code and configuration files only. Administrative
 
 ## Archive
 
-The clean-text public code release is archived on Zenodo at https://doi.org/10.5281/zenodo.19827735.
+This repository uses Zenodo GitHub integration for release archiving. The repository concept DOI is https://doi.org/10.5281/zenodo.19826728; the release-specific version DOI is shown on the Zenodo record for the archived GitHub release.

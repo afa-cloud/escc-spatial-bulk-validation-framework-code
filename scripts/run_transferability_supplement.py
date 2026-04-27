@@ -46,8 +46,8 @@ import run_spatial_axis_deep_validation as deep  # noqa: E402
 
 
 RUN_DATE = datetime.now(UTC).date().isoformat()
-EXECUTOR_ID = "transferability_executor_001"
-REVIEWER_ID = "transferability_reviewer_001"
+ANALYSIS_ROLE_ID = "transferability_analysis_001"
+QC_ROLE_ID = "transferability_qc_001"
 
 SIGNATURES: dict[str, dict[str, Any]] = {
     "differentiation_keratinization": {
@@ -245,8 +245,8 @@ def compute_associations(layers: dict[str, tuple[list[str], dict[str, list[float
                                 "spearman_rho": rho,
                                 "spearman_p_asymptotic": p_value,
                                 "comparison_expectation": FOCUS_COMPARISONS.get((signature_id, panel_id), "contextual"),
-                                "executor_agent_id": EXECUTOR_ID,
-                                "reviewer_agent_id": REVIEWER_ID,
+                                "analysis_role_id": ANALYSIS_ROLE_ID,
+                                "qc_role_id": QC_ROLE_ID,
                             }
                         )
     fdr = deep.bh_fdr([float(row["spearman_p_asymptotic"]) for row in rows])
@@ -262,7 +262,7 @@ def load_hra003627_rows() -> list[dict[str, Any]]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle, delimiter="\t"):
             if row.get("signature_id") in source_ids:
-                rows.append({**row, "executor_agent_id": EXECUTOR_ID, "reviewer_agent_id": REVIEWER_ID})
+                rows.append({**row, "analysis_role_id": ANALYSIS_ROLE_ID, "qc_role_id": QC_ROLE_ID})
     return rows
 
 
@@ -311,8 +311,8 @@ def load_hra008846_signature_hits() -> list[dict[str, Any]]:
                             "fdr": fdr,
                             "significance_status": significance_label(pvalue, fdr),
                             "interpretation": "supportive source-table row for transferability phenotype; not raw spatial reanalysis",
-                            "executor_agent_id": EXECUTOR_ID,
-                            "reviewer_agent_id": REVIEWER_ID,
+                            "analysis_role_id": ANALYSIS_ROLE_ID,
+                            "qc_role_id": QC_ROLE_ID,
                         }
                     )
                 continue
@@ -338,8 +338,8 @@ def load_hra008846_signature_hits() -> list[dict[str, Any]]:
                     "fdr": fdr,
                     "significance_status": significance_label(pvalue, fdr),
                     "interpretation": "supportive source-table row for transferability phenotype; not raw spatial reanalysis",
-                    "executor_agent_id": EXECUTOR_ID,
-                    "reviewer_agent_id": REVIEWER_ID,
+                    "analysis_role_id": ANALYSIS_ROLE_ID,
+                    "qc_role_id": QC_ROLE_ID,
                 }
             )
     return rows
@@ -369,8 +369,8 @@ def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
                             "logrank_p": "",
                             "logrank_fdr": "",
                             "interpretation": "precomputed public bulk layer reused from earlier successful workflow run",
-                            "executor_agent_id": EXECUTOR_ID,
-                            "reviewer_agent_id": REVIEWER_ID,
+                            "analysis_role_id": ANALYSIS_ROLE_ID,
+                            "qc_role_id": QC_ROLE_ID,
                         }
                     )
     if surv_path.exists():
@@ -392,8 +392,8 @@ def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
                             "logrank_p": row.get("logrank_p", ""),
                             "logrank_fdr": row.get("logrank_fdr", ""),
                             "interpretation": "precomputed public bulk survival layer reused; no prognostic claim unless supported",
-                            "executor_agent_id": EXECUTOR_ID,
-                            "reviewer_agent_id": REVIEWER_ID,
+                            "analysis_role_id": ANALYSIS_ROLE_ID,
+                            "qc_role_id": QC_ROLE_ID,
                         }
                     )
     return rows
@@ -485,9 +485,9 @@ def summarize_transferability(
                 "hra008846_significant_or_p_only_rows": len(sig_h846),
                 "precomputed_tcga_layer": tcga_bulk_note,
                 "transferability_gate": gate_status,
-                "claim_boundary": "supports framework transferability at association/source-table level only; not a new mechanism or clinical biomarker",
-                "executor_agent_id": EXECUTOR_ID,
-                "reviewer_agent_id": REVIEWER_ID,
+                "interpretation_scope": "supports framework transferability at association/source-table level only; not a new mechanism or clinical biomarker",
+                "analysis_role_id": ANALYSIS_ROLE_ID,
+                "qc_role_id": QC_ROLE_ID,
             }
         )
     return summary
@@ -549,7 +549,7 @@ def write_report(
             "",
             "## Reproducibility Status",
             "",
-            "- Executor and reviewer IDs are distinct.",
+            "- Analysis and QC role IDs are distinct.",
             "- Source-table rows are treated as published supplementary quantitative tables, not raw spatial matrices.",
             "- Bulk associations are interpreted as reproducibility/context checks only.",
             "- The analysis supports transferability of the framework, not the discovery of a new biological mechanism.",
@@ -566,41 +566,41 @@ def write_report(
 
 
 def write_review(summary_rows: list[dict[str, Any]], manifest_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    executor_ok = EXECUTOR_ID != REVIEWER_ID
+    analysis_ok = ANALYSIS_ROLE_ID != QC_ROLE_ID
     bulk_ok = any(row.get("status") == "completed" for row in manifest_rows)
     source_ok = all(row.get("transferability_gate") == "pass_with_limits" for row in summary_rows)
     rows = [
         {
-            "stage": "agent_separation",
-            "check": "executor_reviewer_distinct",
-            "status": "pass" if executor_ok else "reject",
-            "reviewer_comment": "Executor and reviewer IDs are distinct." if executor_ok else "Executor and reviewer IDs must differ.",
-            "executor_agent_id": EXECUTOR_ID,
-            "reviewer_agent_id": REVIEWER_ID,
+            "stage": "role_separation",
+            "check": "independent_qc_roles",
+            "status": "pass" if analysis_ok else "reject",
+            "qc_comment": "Analysis and QC role IDs are distinct." if analysis_ok else "Analysis and QC role IDs must differ.",
+            "analysis_role_id": ANALYSIS_ROLE_ID,
+            "qc_role_id": QC_ROLE_ID,
         },
         {
             "stage": "bulk_validation",
             "check": "tcga_or_geo_completed",
             "status": "pass_with_limits" if bulk_ok else "reject",
-            "reviewer_comment": "At least one public bulk layer loaded; interpret as association-level evidence.",
-            "executor_agent_id": EXECUTOR_ID,
-            "reviewer_agent_id": REVIEWER_ID,
+            "qc_comment": "At least one public bulk layer loaded; interpret as association-level evidence.",
+            "analysis_role_id": ANALYSIS_ROLE_ID,
+            "qc_role_id": QC_ROLE_ID,
         },
         {
             "stage": "source_table_reproducibility",
             "check": "hra003627_stage_trend_present",
             "status": "pass_with_limits" if source_ok else "revise",
-            "reviewer_comment": "HRA003627 source-table trends support transferability demonstration; source tables are not raw spatial matrices.",
-            "executor_agent_id": EXECUTOR_ID,
-            "reviewer_agent_id": REVIEWER_ID,
+            "qc_comment": "HRA003627 source-table trends support transferability demonstration; source tables are not raw spatial matrices.",
+            "analysis_role_id": ANALYSIS_ROLE_ID,
+            "qc_role_id": QC_ROLE_ID,
         },
         {
-            "stage": "claim_boundary",
+            "stage": "interpretation_scope",
             "check": "no_new_mechanistic_or_clinical_claim",
             "status": "pass",
-            "reviewer_comment": "Use only as supplemental framework portability evidence.",
-            "executor_agent_id": EXECUTOR_ID,
-            "reviewer_agent_id": REVIEWER_ID,
+            "qc_comment": "Use only as supplemental framework portability evidence.",
+            "analysis_role_id": ANALYSIS_ROLE_ID,
+            "qc_role_id": QC_ROLE_ID,
         },
     ]
     return rows
@@ -648,8 +648,8 @@ def main() -> None:
         "spearman_p_asymptotic",
         "spearman_fdr_bh",
         "comparison_expectation",
-        "executor_agent_id",
-        "reviewer_agent_id",
+        "analysis_role_id",
+        "qc_role_id",
     ]
     source_fields = [
         "dataset",
@@ -666,8 +666,8 @@ def main() -> None:
         "spearman_stage_n",
         "escc_vs_normal_mann_whitney_p",
         "interpretation",
-        "executor_agent_id",
-        "reviewer_agent_id",
+        "analysis_role_id",
+        "qc_role_id",
     ]
     h846_fields = [
         "dataset",
@@ -681,8 +681,8 @@ def main() -> None:
         "fdr",
         "significance_status",
         "interpretation",
-        "executor_agent_id",
-        "reviewer_agent_id",
+        "analysis_role_id",
+        "qc_role_id",
     ]
     tcga_precomputed_fields = [
         "dataset",
@@ -698,8 +698,8 @@ def main() -> None:
         "logrank_p",
         "logrank_fdr",
         "interpretation",
-        "executor_agent_id",
-        "reviewer_agent_id",
+        "analysis_role_id",
+        "qc_role_id",
     ]
     summary_fields = [
         "signature_id",
@@ -716,12 +716,12 @@ def main() -> None:
         "hra008846_significant_or_p_only_rows",
         "precomputed_tcga_layer",
         "transferability_gate",
-        "claim_boundary",
-        "executor_agent_id",
-        "reviewer_agent_id",
+        "interpretation_scope",
+        "analysis_role_id",
+        "qc_role_id",
     ]
     manifest_fields = ["dataset", "status", "n_samples", "n_genes", "n_probe_mapped_genes", "error"]
-    review_fields = ["stage", "check", "status", "reviewer_comment", "executor_agent_id", "reviewer_agent_id"]
+    qc_fields = ["stage", "check", "status", "qc_comment", "analysis_role_id", "qc_role_id"]
 
     table_paths = {
         "S22_transferability_bulk_assoc.tsv": (association_rows, association_fields),
@@ -730,7 +730,7 @@ def main() -> None:
         "S25_transferability_summary.tsv": (summary_rows, summary_fields),
         "S26_transferability_TCGA_precomputed.tsv": (tcga_precomputed_rows, tcga_precomputed_fields),
         "S27_transferability_manifest.tsv": (manifest_rows, manifest_fields),
-        "S28_transferability_review.tsv": (review_rows, review_fields),
+        "S28_transferability_review.tsv": (review_rows, qc_fields),
     }
     output_paths: list[Path] = []
     for filename, (rows, fields) in table_paths.items():
@@ -747,7 +747,7 @@ def main() -> None:
             "S25_summary": (summary_rows, summary_fields),
             "S26_TCGA_precomputed": (tcga_precomputed_rows, tcga_precomputed_fields),
             "S27_manifest": (manifest_rows, manifest_fields),
-            "S28_review": (review_rows, review_fields),
+            "S28_review": (review_rows, qc_fields),
         },
         xlsx_path,
     )

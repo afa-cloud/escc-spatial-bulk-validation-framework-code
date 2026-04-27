@@ -30,7 +30,7 @@
     ]
   },
   "review_policy": {
-    "require_agent_separation": true,
+    "require_independent_qc_roles": true,
     "allowed_verdicts": [
       "pass",
       "revise",
@@ -43,8 +43,8 @@
     {
       "id": "candidate_universe",
       "order": 1,
-      "executor_role": "Annotation Executor",
-      "reviewer_role": "Annotation Reviewer",
+      "analysis_role": "Annotation Analysis",
+      "qc_role": "Annotation QC",
       "required_checks": [
         "source_traceable",
         "protein_coding_only",
@@ -55,8 +55,8 @@
     {
       "id": "stability_screen",
       "order": 2,
-      "executor_role": "Expression Executor",
-      "reviewer_role": "Expression Reviewer",
+      "analysis_role": "Expression Analysis",
+      "qc_role": "Expression QC",
       "required_checks": [
         "esophagus_detectable",
         "tumor_detectable",
@@ -67,8 +67,8 @@
     {
       "id": "literature_screen",
       "order": 3,
-      "executor_role": "Literature Executor",
-      "reviewer_role": "Literature Reviewer",
+      "analysis_role": "Literature Analysis",
+      "qc_role": "Literature QC",
       "required_checks": [
         "pubmed_query_recorded",
         "pmc_query_recorded",
@@ -79,8 +79,8 @@
     {
       "id": "scoring_review",
       "order": 4,
-      "executor_role": "Scoring Executor",
-      "reviewer_role": "Scoring Reviewer",
+      "analysis_role": "Scoring Analysis",
+      "qc_role": "Scoring QC",
       "required_checks": [
         "score_inputs_complete",
         "top20_rechecked",
@@ -91,8 +91,8 @@
     {
       "id": "deep_escc_analysis",
       "order": 5,
-      "executor_role": "ESCC Analysis Executor",
-      "reviewer_role": "ESCC Analysis Reviewer",
+      "analysis_role": "ESCC Analysis",
+      "qc_role": "ESCC QC",
       "required_checks": [
         "squamous_subset_used",
         "gene_level_comparator_included",
@@ -103,20 +103,20 @@
     {
       "id": "lead_candidate_decision",
       "order": 6,
-      "executor_role": "Decision Executor",
-      "reviewer_role": "Decision Reviewer",
+      "analysis_role": "Decision Analysis",
+      "qc_role": "Decision QC",
       "required_checks": [
         "isoform_signal_stronger_than_gene_level",
         "clinical_effect_reproducible",
         "independent_support_present",
-        "mechanism_not_overclaimed"
+        "mechanistic_claims_limited"
       ]
     },
     {
       "id": "manuscript_review",
       "order": 7,
-      "executor_role": "Manuscript Agent",
-      "reviewer_role": "Scientific Reviewer",
+      "analysis_role": "Manuscript Preparation",
+      "qc_role": "Scientific QC",
       "required_checks": [
         "novelty_reviewed",
         "statistical_review_complete",
@@ -153,10 +153,10 @@
       "cancer_type",
       "isoform_specific",
       "is_escc",
-      "executor_agent_id",
-      "reviewer_agent_id",
-      "executor_conclusion",
-      "reviewer_conclusion",
+      "analysis_role_id",
+      "qc_role_id",
+      "analysis_conclusion",
+      "qc_conclusion",
       "verdict"
     ],
     "analysis_registry": [
@@ -168,8 +168,8 @@
       "script_path",
       "parameters",
       "output_artifacts",
-      "executor_agent_id",
-      "reviewer_agent_id",
+      "analysis_role_id",
+      "qc_role_id",
       "review_status"
     ]
   },

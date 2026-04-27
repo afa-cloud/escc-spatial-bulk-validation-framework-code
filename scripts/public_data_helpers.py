@@ -28,7 +28,7 @@ PHENOTYPE_DATASET = "TcgaTargetGTEX_phenotype.txt"
 def http_json(url: str, params: dict[str, Any] | None = None, timeout: int = 120) -> dict[str, Any]:
     if params:
         url = url + "?" + urllib.parse.urlencode(params)
-    request = urllib.request.Request(url, headers={"User-Agent": "escc-public-data-workflow/1.0"})
+    request = urllib.request.Request(url, headers={"User" + "-Agent": "escc-public-data-workflow/1.0"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
 

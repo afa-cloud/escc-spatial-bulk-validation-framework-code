@@ -59,7 +59,9 @@ https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
 Release tag: `v1.0.4-submission-polished`.
 
-The release commit is recorded by the GitHub tag and the Zenodo related identifier for the archived release.
+Release commit: `03ea3b7ce1e926c9830be466f8f1fe4cf4ae4df6`.
+
+Zenodo version DOI for this release: https://doi.org/10.5281/zenodo.19830116.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

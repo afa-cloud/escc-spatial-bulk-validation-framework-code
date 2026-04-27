@@ -74,6 +74,6 @@ reproducibility:
   primary_processed_table: S1_Table.xlsx
   transferability_table: S3_Transferability_Supplement.xlsx
   public_repository: https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
-  version_tag: v1.0.6-submission-polished
-version_doi: 10.5281/zenodo.19830985
+version_tag: v1.0.7-submission-cleanmanifest
+version_doi: assigned_by_zenodo_after_release
   concept_doi: 10.5281/zenodo.19826728

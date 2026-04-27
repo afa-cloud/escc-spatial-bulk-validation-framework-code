@@ -5,10 +5,9 @@ __pycache__/
 Thumbs.db
 *.tmp
 ~$*
-audit/rendered_docx/
+rendered_docx/
 manuscript/
 figures/
 cover_letter/
 *.pdf
 *.docx
-

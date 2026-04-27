@@ -11,6 +11,7 @@ repository-code: "https://github.com/afa-cloud/escc-spatial-bulk-validation-fram
 license: MIT
 version: "v1.0.3-submission-cleantext"
 date-released: "2026-04-28"
+doi: "10.5281/zenodo.19828738"
 keywords:
   - esophageal squamous cell carcinoma
   - spatial transcriptomics

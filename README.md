@@ -57,9 +57,11 @@ Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag to use for the next archive: `v1.0.2-submission-cleantext`.
+Release tag: `v1.0.2-submission-cleantext`.
 
-The GitHub release page and Zenodo record page should be cited for the exact release commit and DOI after archiving.
+Commit: `b037967848d066db05ddd3c23c664e73034cbcc9`.
+
+Zenodo DOI: https://doi.org/10.5281/zenodo.19827735.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

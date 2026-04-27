@@ -1,199 +1,79 @@
-{
-  "project": {
-    "name": "escc_splice_isoform_screen",
-    "disease": "ESCC",
-    "article_type": "public_bioinformatics",
-    "data_strategy": "preprocessed_public",
-    "raw_reanalysis": false,
-    "controlled_access_data": false,
-    "wet_lab_validation": false
-  },
-  "data_sources": {
-    "literature": [
-      "NCBI PubMed E-utilities",
-      "NCBI PMC E-utilities"
-    ],
-    "annotation": [
-      "Ensembl REST",
-      "RefSeq",
-      "GENCODE",
-      "MANE",
-      "APPRIS"
-    ],
-    "expression_and_clinical": [
-      "UCSC Xena",
-      "GDC STAR Counts",
-      "cBioPortal"
-    ],
-    "auxiliary_splicing": [
-      "TCGA SpliceSeq"
-    ]
-  },
-  "review_policy": {
-    "require_independent_qc_roles": true,
-    "allowed_verdicts": [
-      "pass",
-      "revise",
-      "reject"
-    ],
-    "escc_absence_wording": "No ESCC same-isoform study was found under the predefined search strategy.",
-    "causality_policy": "Use association or predictive language unless experimental causality is available."
-  },
-  "workflow_stages": [
-    {
-      "id": "candidate_universe",
-      "order": 1,
-      "analysis_role": "Annotation Analysis",
-      "qc_role": "Annotation QC",
-      "required_checks": [
-        "source_traceable",
-        "protein_coding_only",
-        "major_isoform_count_reviewed",
-        "transcript_mapping_reproducible"
-      ]
-    },
-    {
-      "id": "stability_screen",
-      "order": 2,
-      "analysis_role": "Expression Analysis",
-      "qc_role": "Expression QC",
-      "required_checks": [
-        "esophagus_detectable",
-        "tumor_detectable",
-        "missingness_reviewed",
-        "isoform_or_junction_mapping_consistent"
-      ]
-    },
-    {
-      "id": "literature_screen",
-      "order": 3,
-      "analysis_role": "Literature Analysis",
-      "qc_role": "Literature QC",
-      "required_checks": [
-        "pubmed_query_recorded",
-        "pmc_query_recorded",
-        "non_escc_cancer_effect_reviewed",
-        "escc_exclusion_search_complete"
-      ]
-    },
-    {
-      "id": "scoring_review",
-      "order": 4,
-      "analysis_role": "Scoring Analysis",
-      "qc_role": "Scoring QC",
-      "required_checks": [
-        "score_inputs_complete",
-        "top20_rechecked",
-        "reject_reasons_recorded",
-        "shortlist_size_between_3_and_5"
-      ]
-    },
-    {
-      "id": "deep_escc_analysis",
-      "order": 5,
-      "analysis_role": "ESCC Analysis",
-      "qc_role": "ESCC QC",
-      "required_checks": [
-        "squamous_subset_used",
-        "gene_level_comparator_included",
-        "clinical_covariates_reviewed",
-        "statistical_limitations_recorded"
-      ]
-    },
-    {
-      "id": "lead_candidate_decision",
-      "order": 6,
-      "analysis_role": "Decision Analysis",
-      "qc_role": "Decision QC",
-      "required_checks": [
-        "isoform_signal_stronger_than_gene_level",
-        "clinical_effect_reproducible",
-        "independent_support_present",
-        "mechanistic_claims_limited"
-      ]
-    },
-    {
-      "id": "manuscript_review",
-      "order": 7,
-      "analysis_role": "Manuscript Preparation",
-      "qc_role": "Scientific QC",
-      "required_checks": [
-        "novelty_reviewed",
-        "statistical_review_complete",
-        "repro_review_complete",
-        "submission_artifacts_complete"
-      ]
-    }
-  ],
-  "required_columns": {
-    "candidate_master": [
-      "gene_symbol",
-      "ensembl_gene_id",
-      "ensembl_transcript_ids",
-      "isoform_count",
-      "major_isoforms",
-      "isoform_simplicity",
-      "expression_stability",
-      "non_escc_cancer_evidence",
-      "escc_novelty",
-      "clinical_analyzability",
-      "mechanism_targetability",
-      "evidence_score",
-      "escc_novelty_status",
-      "review_status"
-    ],
-    "literature_screening": [
-      "gene_symbol",
-      "query_type",
-      "query_string",
-      "database",
-      "query_date",
-      "pmid",
-      "doi",
-      "cancer_type",
-      "isoform_specific",
-      "is_escc",
-      "analysis_batch_id",
-      "quality_check_id",
-      "analysis_conclusion",
-      "qc_conclusion",
-      "verdict"
-    ],
-    "analysis_registry": [
-      "analysis_id",
-      "candidate_id",
-      "analysis_type",
-      "input_data",
-      "source_version_or_download_date",
-      "script_path",
-      "parameters",
-      "output_artifacts",
-      "analysis_batch_id",
-      "quality_check_id",
-      "review_status"
-    ]
-  },
-  "evidence_card_sections": [
-    "Candidate",
-    "Direct Evidence",
-    "Indirect Evidence",
-    "Missing Evidence",
-    "Conflicting Evidence",
-    "Source Log",
-    "Review Status"
-  ],
-  "scoring_weights": {
-    "isoform_simplicity": 0.18,
-    "expression_stability": 0.18,
-    "non_escc_cancer_evidence": 0.2,
-    "escc_novelty": 0.18,
-    "clinical_analyzability": 0.16,
-    "mechanism_targetability": 0.1
-  },
-  "statistical_review_thresholds": {
-    "min_samples": 50,
-    "min_events_per_variable": 10,
-    "max_missing_clinical_rate": 0.2
-  }
-}
+project:
+  name: escc_spatial_bulk_validation_framework
+  disease: esophageal squamous cell carcinoma
+  article_type: public_data_bioinformatics
+  framework: spatial_hypothesis_to_bulk_validation_to_source_table_reproducibility
+  data_strategy: public_preprocessed_and_published_quantitative_tables
+  raw_spatial_matrix_reanalysis: false
+  controlled_access_data_used: false
+  wet_lab_validation: false
 
+scope:
+  primary_demonstration:
+    - caf_ecm_stromal_remodeling_phenotype
+    - ogt_pi3k_hypoxia_context
+  transferability_demonstration:
+    - differentiation_keratinization_phenotype
+    - cancerization_progression_phenotype
+  inference_boundary:
+    - association_level_evidence
+    - source_table_reproducibility
+    - no_causal_inference
+    - no_survival_prediction_claim
+    - no_drug_sensitivity_prediction_claim
+
+data_sources:
+  bulk_expression_and_clinical:
+    - TCGA/GDC TCGA-ESCA case metadata
+    - UCSC Xena / Toil TCGA-GTEx expression matrices
+    - GEO GSE47404
+    - GEO GSE53625 public series matrix and probe-sequence rescue
+  spatial_source_tables:
+    - HRA003627 published source data from Liu et al. 2023
+    - HRA008846 published supplementary tables from Liu et al. 2026
+  supplementary_target_context:
+    - GDSC2 fitted dose-response tables and CancerRxGene cell-line annotation
+
+analysis_stages:
+  - id: axis_definition
+    output: S1_Table.xlsx sheet S1_axis_definitions
+    quality_check: predefined gene sets, no optimized weights
+  - id: bulk_association
+    output: S1_Table.xlsx sheets S2 to S5
+    quality_check: ESCC squamous subset and independent GSE47404 replication
+  - id: gse53625_supportive_rescue
+    output: S1_Table.xlsx sheets S6 to S7 and S20
+    quality_check: target-scope probe rescue and array-design duplicate check
+  - id: source_table_reproducibility
+    output: S1_Table.xlsx sheets S8 to S11
+    quality_check: published source/supplementary table quantification only
+  - id: sensitivity_analysis
+    output: S1_Table.xlsx sheets S17 to S19
+    quality_check: gene-set overlap, overlap-removed correlation and z-score sensitivity
+  - id: supplementary_transferability
+    output: S3_Transferability_Supplement.xlsx
+    quality_check: association and source-table level transferability only
+
+statistics:
+  axis_score:
+    expression_scale: log2_like_expression_or_platform_original_scale_as_documented
+    aggregation: mean_of_available_genes
+    imputation: none
+    optimized_weights: none
+  sensitivity:
+    overlap_removed_correlation: spearman_after_removing_axis_genes_from_comparator_panel
+    zscore_sensitivity: within_cohort_gene_zscore_before_score_aggregation
+  multiple_testing:
+    method: Benjamini-Hochberg false discovery rate
+  clinical_grouping:
+    median_split: fixed_nonparametric_descriptive_rule
+    optimized_cutpoint: false
+
+reproducibility:
+  primary_code_package: S2_Code.zip
+  primary_processed_table: S1_Table.xlsx
+  transferability_table: S3_Transferability_Supplement.xlsx
+  public_repository: https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
+  version_tag: v1.0.6-submission-polished
+  version_doi: assigned_by_zenodo_after_release
+  concept_doi: 10.5281/zenodo.19826728

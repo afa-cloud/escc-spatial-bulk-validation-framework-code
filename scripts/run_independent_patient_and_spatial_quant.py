@@ -33,6 +33,21 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+
+def _early_help_if_requested() -> None:
+    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+        print((__doc__ or "").strip())
+        print(
+            "\nUsage:\n"
+            "  python scripts/run_independent_patient_and_spatial_quant.py\n\n"
+            "Run from the repository root after installing requirements. Outputs are written under "
+            "spatial_escc_workflow/results, reports, reviews and deliverables relative to the repository."
+        )
+        raise SystemExit(0)
+
+
+_early_help_if_requested()
+
 import pandas as pd
 
 
@@ -1248,7 +1263,7 @@ def write_review(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "qc_comment": (
                 f"Accepted probes={patient.get('n_accepted_probe_rows', 0)}; "
                 f"mapped genes={','.join(patient.get('mapped_genes', [])) or 'none'}. "
-                "Mapping is target-sequence rescue, not a full genome-wide probe specificity audit."
+                "Mapping is target-sequence rescue, not a full genome-wide probe specificity assessment."
             ),
         },
         {
@@ -1526,7 +1541,7 @@ def write_package() -> Path:
         TABLE_ROOT / "hra008846_cell_abundance_trends.tsv",
         TABLE_ROOT / "hra008846_ligand_receptor_axis_hits.tsv",
         TABLE_ROOT / "hra008846_download_manifest.tsv",
-        REVIEW_ROOT / "independent_patient_and_spatial_quant_reproducibility_audit.tsv",
+        REVIEW_ROOT / "independent_patient_and_spatial_quant_reproducibility_check.tsv",
         ROOT / "scripts" / "run_independent_patient_and_spatial_quant.py",
     ]
     with zipfile.ZipFile(package_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:

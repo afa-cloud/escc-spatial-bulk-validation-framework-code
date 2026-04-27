@@ -14,12 +14,12 @@ The repository is intended to support code availability and reproducibility for 
 
 ## Repository contents
 
-- `scripts/`: Python scripts used for the public-data workflow, independent patient/source-table checks, and supplemental transferability analysis.
+- `scripts/`: Python scripts used for the public-data workflow, independent patient/source-table checks, supplemental transferability analysis, and S1 workbook assembly from generated TSV outputs.
 - `project_config.yaml`: project-level configuration and declared study scope.
 - `requirements.txt`: Python dependencies used by the submitted code package.
 - `manifests/`: public-data source manifest.
 - `supporting_information/`: submitted processed tables copied from the manuscript package.
-- `reproducibility_check.tsv`: local reproducibility/audit check summary.
+- `reproducibility_check.tsv`: local reproducibility check summary.
 - `S2_Code_manifest.json`: manifest for the submitted code package.
 - `.zenodo.json` and `CITATION.cff`: metadata used for DOI archiving.
 
@@ -57,11 +57,9 @@ Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.5-submission-polished`.
+Release tag: `v1.0.6-submission-polished`.
 
-Release commit: `e853bd15dd9f6b605d32c8af7cc4317c4dc98b3f`.
-
-Zenodo version DOI for this release: https://doi.org/10.5281/zenodo.19830454.
+The release commit is recorded by the GitHub tag and the Zenodo related identifier for the archived release.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

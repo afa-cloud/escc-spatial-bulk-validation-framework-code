@@ -2,6 +2,7 @@ artifact	role	status	notes
 scripts/run_spatial_axis_deep_validation.py	core_analysis_script	pass	Public-data spatial-to-bulk axis analysis script.
 scripts/run_independent_patient_and_spatial_quant.py	core_analysis_script	pass	Independent patient and source-table quantification script.
 scripts/run_transferability_supplement.py	supplementary_analysis_script	pass	Transferability sensitivity supplement script.
+scripts/assemble_s1_table.py	workbook_assembly_helper	pass	Assembles the S1 workbook layout from generated TSV outputs when source tables are available locally.
 scripts/public_data_helpers.py	shared_helper	pass	Shared public-data retrieval and statistics helper functions.
 project_config.yaml	configuration	pass	Project scope and analysis configuration.
 S16_data_manifest.tsv	data_manifest	pass	Public source manifest with sanitized paths.

@@ -24,6 +24,21 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+
+def _early_help_if_requested() -> None:
+    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+        print((__doc__ or "").strip())
+        print(
+            "\nUsage:\n"
+            "  python scripts/run_transferability_supplement.py\n\n"
+            "Run from the repository root after installing requirements. Outputs are written under "
+            "transferability_supplement_2026-04-27 relative to the repository."
+        )
+        raise SystemExit(0)
+
+
+_early_help_if_requested()
+
 import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill
@@ -34,7 +49,7 @@ PROJECT_ROOT = CODE_DIR.parent
 OUT_ROOT = PROJECT_ROOT / "transferability_supplement_2026-04-27"
 TABLE_DIR = OUT_ROOT / "tables"
 REPORT_DIR = OUT_ROOT / "reports"
-AUDIT_DIR = OUT_ROOT / "audit"
+REVIEW_DIR = OUT_ROOT / "review"
 SUPP_DIR = OUT_ROOT / "supporting_information"
 CODE_OUT_DIR = OUT_ROOT / "code"
 
@@ -116,7 +131,7 @@ def configure_imported_modules() -> None:
 
 
 def ensure_dirs() -> None:
-    for path in [TABLE_DIR, REPORT_DIR, AUDIT_DIR, SUPP_DIR, CODE_OUT_DIR]:
+    for path in [TABLE_DIR, REPORT_DIR, REVIEW_DIR, SUPP_DIR, CODE_OUT_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
 
@@ -784,8 +799,8 @@ def main() -> None:
         "manifest_rows": manifest_rows,
         "review_rows": review_rows,
     }
-    (AUDIT_DIR / "transferability_supplement_summary.json").write_text(json.dumps(summary_json, ensure_ascii=False, indent=2), encoding="utf-8")
-    output_paths.append(AUDIT_DIR / "transferability_supplement_summary.json")
+    (REVIEW_DIR / "transferability_supplement_summary.json").write_text(json.dumps(summary_json, ensure_ascii=False, indent=2), encoding="utf-8")
+    output_paths.append(REVIEW_DIR / "transferability_supplement_summary.json")
     package = package_outputs(output_paths)
     print(json.dumps(summary_json, ensure_ascii=False, indent=2))
 

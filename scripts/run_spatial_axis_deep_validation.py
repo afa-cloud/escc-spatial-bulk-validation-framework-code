@@ -5,7 +5,7 @@ This script extends the spatial signature screen with:
 
 - TCGA ESCC immune and pathway association checks.
 - Independent GEO bulk validation in GSE47404.
-- GSE53625 mapping audit.
+- GSE53625 mapping assessment.
 - GDSC2 ESCA target-class context for axis-relevant genes.
 
 All outputs are evidence artifacts with separate analysis and quality-check batch IDs. The
@@ -26,6 +26,21 @@ from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+
+def _early_help_if_requested() -> None:
+    if any(arg in {"-h", "--help"} for arg in sys.argv[1:]):
+        print((__doc__ or "").strip())
+        print(
+            "\nUsage:\n"
+            "  python scripts/run_spatial_axis_deep_validation.py\n\n"
+            "Run from the repository root after installing requirements. Outputs are written under "
+            "spatial_escc_workflow/results, reports and reviews relative to the repository."
+        )
+        raise SystemExit(0)
+
+
+_early_help_if_requested()
 
 import pandas as pd
 
@@ -638,7 +653,7 @@ def run_gse47404() -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dic
     return immune_rows + pathway_rows, clinical_rows, manifest, meta
 
 
-def run_gse53625_audit() -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def run_gse53625_assessment() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     geo_dir = DATA_ROOT / "geo" / "GSE53625"
     matrix_path = geo_dir / "GSE53625_series_matrix.txt.gz"
     rows: list[dict[str, Any]] = []
@@ -867,7 +882,7 @@ def write_report(summary: dict[str, Any]) -> None:
                 auc=stringify(row["median_auc"]),
             )
         )
-    lines.extend(["", "## GSE53625 audit", ""])
+    lines.extend(["", "## GSE53625 assessment", ""])
     for row in summary["gse53625_rows"]:
         lines.append(
             "- GSE53625 status: {status}; samples={samples}; survival fields={survival}; direct axis gene hits in first RAW member={hits}.".format(
@@ -1073,9 +1088,9 @@ def main() -> None:
         ["dataset", "artifact", "url", "path", "bytes", "expected_bytes", "status", "seconds", "error"],
     )
 
-    gse53625_rows, gse53625_meta = run_gse53625_audit()
+    gse53625_rows, gse53625_meta = run_gse53625_assessment()
     write_tsv(
-        TABLE_ROOT / "deep_axis_geo_gse53625_mapping_audit.tsv",
+        TABLE_ROOT / "deep_axis_geo_gse53625_mapping_assessment.tsv",
         gse53625_rows,
         [
             "dataset",

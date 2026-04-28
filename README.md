@@ -1,4 +1,4 @@
-﻿# ESCC spatial-to-bulk validation framework
+# ESCC spatial-to-bulk validation framework
 
 This repository contains the analysis code and reproducibility materials for the manuscript:
 
@@ -57,7 +57,7 @@ Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.11-submission-finalsync`.
+Release tag: `v1.0.10-submission-consistency`.
 
 The GitHub release page records the exact release commit.
 

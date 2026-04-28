@@ -749,7 +749,6 @@ def main() -> None:
         "check_label",
     ]
     manifest_fields = ["dataset", "status", "n_samples", "n_genes", "n_probe_mapped_genes", "error"]
-    check_fields = ["stage", "check", "status", "check_comment", "run_label", "check_label"]
 
     table_paths = {
         "S22_transferability_bulk_assoc.tsv": (association_rows, association_fields),
@@ -758,7 +757,6 @@ def main() -> None:
         "S25_transferability_summary.tsv": (summary_rows, summary_fields),
         "S26_transferability_TCGA_precomputed.tsv": (tcga_precomputed_rows, tcga_precomputed_fields),
         "S27_transferability_manifest.tsv": (manifest_rows, manifest_fields),
-        "S28_transferability_review.tsv": (review_rows, check_fields),
     }
     output_paths: list[Path] = []
     for filename, (rows, fields) in table_paths.items():

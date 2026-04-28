@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "ESCC spatial-to-bulk validation framework",
   "upload_type": "software",
   "description": "Analysis code and reproducibility materials for a public-data spatial-to-bulk reproducibility framework in esophageal squamous cell carcinoma. The archive contains public-data analysis scripts, configuration files, manifests and processed supporting tables.",
@@ -20,6 +20,6 @@
     "reproducibility",
     "source table"
   ],
-  "version": "v1.0.10-submission-consistency",
+  "version": "v1.0.11-submission-finalsync",
   "access_right": "open"
 }

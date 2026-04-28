@@ -374,7 +374,7 @@ def load_hra008846_signature_hits() -> list[dict[str, Any]]:
 
 
 def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
-    """Reuse existing TCGA/GTEx signature artifacts when live Xena reload fails."""
+    """Reuse precomputed TCGA/GTEx signature tables when live Xena reload fails."""
     rows: list[dict[str, Any]] = []
     diff_path = PROJECT_ROOT / "results" / "tables" / "spatial_signature_tcga_gtex_differential.tsv"
     surv_path = PROJECT_ROOT / "results" / "tables" / "spatial_signature_tcga_survival.tsv"
@@ -396,7 +396,7 @@ def load_precomputed_tcga_signature_rows() -> list[dict[str, Any]]:
                             "mann_whitney_fdr": row.get("mann_whitney_fdr", ""),
                             "logrank_p": "",
                             "logrank_fdr": "",
-                            "interpretation": "precomputed public bulk layer reused from earlier successful workflow run",
+                            "interpretation": "precomputed public bulk layer generated using the same public-data workflow",
                             "run_label": RUN_LABEL,
                             "check_label": CHECK_LABEL,
                         }
@@ -573,7 +573,7 @@ def write_report(
             "",
             "## Manuscript Insert",
             "",
-            "As a supplementary transferability check, the same tiered framework was applied to two non-stromal ESCC phenotypes derived from published spatial source tables: differentiation/keratinization loss and cancerization/progression gain. HRA003627 source-table quantification showed the expected monotonic stage trends for both phenotypes. In public bulk resources, GSE47404 provided a tumor-only correlation layer, and the precomputed TCGA/GTEx signature artifacts provided tumor-normal and survival context from the earlier successful workflow run. These results support the portability of the framework to epithelial progression phenotypes while preserving the same claim boundaries used for the CAF/ECM demonstration.",
+            "As a supplementary transferability check, the same tiered framework was applied to two non-stromal ESCC phenotypes derived from published spatial source tables: differentiation/keratinization loss and cancerization/progression gain. HRA003627 source-table quantification showed the expected monotonic stage trends for both phenotypes. In public bulk resources, GSE47404 provided a tumor-only correlation layer, and precomputed TCGA/GTEx signature tables generated using the same public-data workflow provided tumor-normal and survival context. These results support the portability of the framework to epithelial progression phenotypes while preserving the same claim boundaries used for the CAF/ECM demonstration.",
             "",
             "## Reproducibility Status",
             "",
@@ -749,7 +749,6 @@ def main() -> None:
         "check_label",
     ]
     manifest_fields = ["dataset", "status", "n_samples", "n_genes", "n_probe_mapped_genes", "error"]
-    check_fields = ["stage", "check", "status", "check_comment", "run_label", "check_label"]
 
     table_paths = {
         "S22_transferability_bulk_assoc.tsv": (association_rows, association_fields),
@@ -758,7 +757,6 @@ def main() -> None:
         "S25_transferability_summary.tsv": (summary_rows, summary_fields),
         "S26_transferability_TCGA_precomputed.tsv": (tcga_precomputed_rows, tcga_precomputed_fields),
         "S27_transferability_manifest.tsv": (manifest_rows, manifest_fields),
-        "S28_transferability_review.tsv": (review_rows, check_fields),
     }
     output_paths: list[Path] = []
     for filename, (rows, fields) in table_paths.items():

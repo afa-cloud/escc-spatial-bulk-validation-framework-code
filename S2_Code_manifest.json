@@ -1,7 +1,7 @@
 {
   "build_time": "2026-04-28T00:00:00",
   "purpose": "Supplementary public-data analysis code package for PLOS ONE submission with transferability supplement",
-  "scope": "analysis code only; administrative submission files and local quality-control utilities are not included",
+  "scope": "analysis code only; administrative submission files and local utility scripts are not included",
   "included_files": [
     "README_S2_Code.md",
     "README_code.md",
@@ -17,8 +17,6 @@
     "S2_Code_manifest.json"
   ],
   "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
-  "release_tag": "v1.0.9-submission-cleanlabels",
-  "release_commit": "64f15e8db07712748f4dd989cc39b7078e897550",
-  "zenodo_version_doi": "10.5281/zenodo.19831709",
+  "release_tag": "v1.0.10-submission-consistency",
   "zenodo_concept_doi": "10.5281/zenodo.19826728"
 }

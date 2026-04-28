@@ -37,22 +37,22 @@ data_sources:
 analysis_stages:
   - id: axis_definition
     output: S1_Table.xlsx sheet S1_axis_definitions
-    quality_check: predefined gene sets, no optimized weights
+    validation_scope: predefined gene sets, no optimized weights
   - id: bulk_association
     output: S1_Table.xlsx sheets S2 to S5
-    quality_check: ESCC squamous subset and independent GSE47404 replication
+    validation_scope: ESCC squamous subset and independent GSE47404 replication
   - id: gse53625_supportive_rescue
     output: S1_Table.xlsx sheets S6 to S7 and S20
-    quality_check: target-scope probe rescue and array-design duplicate check
+    validation_scope: target-scope probe rescue and array-design duplicate check
   - id: source_table_reproducibility
     output: S1_Table.xlsx sheets S8 to S11
-    quality_check: published source/supplementary table quantification only
+    validation_scope: published source/supplementary table quantification only
   - id: sensitivity_analysis
     output: S1_Table.xlsx sheets S17 to S19
-    quality_check: gene-set overlap, overlap-removed correlation and z-score sensitivity
+    validation_scope: gene-set overlap, overlap-removed correlation and z-score sensitivity
   - id: supplementary_transferability
     output: S3_Transferability_Supplement.xlsx
-    quality_check: association and source-table level transferability only
+    validation_scope: association and source-table level transferability only
 
 statistics:
   axis_score:
@@ -74,6 +74,5 @@ reproducibility:
   primary_processed_table: S1_Table.xlsx
   transferability_table: S3_Transferability_Supplement.xlsx
   public_repository: https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
-version_tag: v1.0.9-submission-cleanlabels
-version_doi: 10.5281/zenodo.19831709
+version_tag: v1.0.10-submission-consistency
 concept_doi: 10.5281/zenodo.19826728

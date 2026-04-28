@@ -775,7 +775,6 @@ def main() -> None:
             "S25_summary": (summary_rows, summary_fields),
             "S26_TCGA_precomputed": (tcga_precomputed_rows, tcga_precomputed_fields),
             "S27_manifest": (manifest_rows, manifest_fields),
-            "S28_review": (review_rows, check_fields),
         },
         xlsx_path,
     )

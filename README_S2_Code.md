@@ -19,7 +19,7 @@ This archive contains the reproducible scripts and configuration files used for 
 
 All primary datasets are public: TCGA/GDC/UCSC Xena, GEO GSE47404, GEO GSE53625, HRA003627, HRA008846 and GDSC2. This code archive does not contain large source datasets.
 
-This archive contains analysis code and configuration files only. Administrative submission files and local quality-control utilities are not included. The S1 assembly helper can combine generated TSV outputs into the submitted S1 workbook layout when the generated source tables are present locally.
+This archive contains analysis code and configuration files only. Administrative submission files and local utility scripts are not included. The S1 assembly helper can combine generated TSV outputs into the submitted S1 workbook layout when the generated source tables are present locally.
 
 ## Archive
 

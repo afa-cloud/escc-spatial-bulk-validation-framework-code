@@ -2,7 +2,7 @@
 
 This repository contains the analysis code and reproducibility materials for the manuscript:
 
-**A tiered spatial-to-bulk validation framework demonstrates a reproducible CAF/ECM stromal-remodeling phenotype in esophageal squamous cell carcinoma**
+**A tiered spatial-to-bulk reproducibility framework supports an association-level CAF/ECM stromal-remodeling phenotype in esophageal squamous cell carcinoma**
 
 The study is a public-data bioinformatics workflow. It applies a tiered validation framework that connects:
 
@@ -57,11 +57,9 @@ Cite the clean-text public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.9-submission-cleanlabels`.
+Release tag: `v1.0.10-submission-consistency`.
 
-Release commit: `64f15e8db07712748f4dd989cc39b7078e897550`.
-
-Zenodo version DOI for this release: https://doi.org/10.5281/zenodo.19831709.
+The GitHub release page records the exact release commit.
 
 Zenodo concept DOI for this repository: https://doi.org/10.5281/zenodo.19826728.
 

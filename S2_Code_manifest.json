@@ -1,4 +1,4 @@
-﻿{
+{
   "build_time": "2026-04-28T00:00:00",
   "purpose": "Supplementary public-data analysis code package for PLOS ONE submission with transferability supplement",
   "scope": "analysis code only; administrative submission files and local utility scripts are not included",
@@ -17,6 +17,6 @@
     "S2_Code_manifest.json"
   ],
   "github_repository": "https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code",
-  "release_tag": "v1.0.12-submission-final",
+  "release_tag": "v1.0.13-submission-zenodo-fix",
   "zenodo_concept_doi": "10.5281/zenodo.19826728"
 }

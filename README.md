@@ -1,4 +1,4 @@
-﻿# ESCC spatial-to-bulk validation framework
+# ESCC spatial-to-bulk validation framework
 
 This repository contains the analysis code and reproducibility materials for the manuscript:
 
@@ -53,11 +53,11 @@ Run scripts from the repository root after reviewing `project_config.yaml` and t
 
 ## Citation
 
-Cite the clean-text public code release for the manuscript-submission version:
+Cite the Zenodo metadata repair public code release for the manuscript-submission version:
 
 https://github.com/afa-cloud/escc-spatial-bulk-validation-framework-code
 
-Release tag: `v1.0.12-submission-final`.
+Release tag: `v1.0.13-submission-zenodo-fix`.
 
 The GitHub release page records the exact release commit.
 
